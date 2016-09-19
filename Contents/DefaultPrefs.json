@@ -1,0 +1,312 @@
+[
+	{
+		"id": "hdhomerun_ip",
+		"type": "text",
+		"label": "HDHomeRun IP",
+		"default": "192.168.1.241"
+	},
+	{
+		"id": "hdhomerun_tuner",
+		"type": "enum",
+		"label": "Tuner Preference",
+		"values": ["auto","tuner0","tuner1","tuner2"],
+		"default": "auto"
+	},
+	{
+		"id": "xmltv_mode",
+		"type": "enum",
+		"label": "XMLTV Mode",
+		"values": ["disable","restapi", "file", "hdhomerun"],
+		"default": "disable"
+	},
+	{
+		"id": "xmltv_file",
+		"type": "text",
+		"label": "XMLTV File Location",
+		"default": "xmltv.xml"
+	},
+	{
+		"id": "xmltv_api_url",
+		"type": "text",
+		"label": "XMLTV API URL",
+		"default": "http://localhost:8998/programs"
+	},
+	{
+		"id": "xmltv_show_next_programs_count",
+		"type": "enum",
+		"label": "XMLTV Next Programs Count",
+		"values": ["0","1","2","3","4","5"],
+		"default": "0"
+	},
+	{
+		"id": "xmltv_match",
+		"type": "enum",
+		"label": "XMLTV Match by channel",
+		"values": ["number","name"],
+		"default": "number"
+	},
+	{
+		"id": "channellogo",
+		"type": "enum",
+		"label": "Channel Logo match by channel",
+		"values": ["name","number","restapi, name","restapi, number","hdhomerun, name","hdhomerun, number"],
+		"default": "name"
+	},
+	{
+		"id": "transcode",
+		"type": "enum",
+		"label": "Pre-Transcode (HDTC-2US only)",
+		"values": ["none","auto","heavy","mobile","internet540","internet480","internet360","internet240"],
+		"default": "none"
+	},
+	{
+		"id": "favorites.1.enable",
+		"type": "bool",
+		"label": "Favorites 1 Enable",
+		"default": "false"
+	},
+	{
+		"id": "favorites.1.name",
+		"type": "text",
+		"label": "Favorites 1 Name",
+		"default": "Favorites #1"
+	},
+	{
+		"id": "favorites.1.list",
+		"type": "text",
+		"label": "Favorites 1 List (space delimited)",
+		"default": ""
+	},
+	{
+		"id": "favorites.1.sortby",
+		"type": "enum",
+		"label": "Favorites 1 Sort By",
+		"values": ["Channel Number","Favorites Order"],
+		"default": "Channel Number"
+	},
+	{
+		"id": "favorites.2.enable",
+		"type": "bool",
+		"label": "Favorites 2 Enable",
+		"default": "false"
+	},
+	{
+		"id": "favorites.2.name",
+		"type": "text",
+		"label": "Favorites 2 Name",
+		"default": "Favorites #2"
+	},
+	{
+		"id": "favorites.2.list",
+		"type": "text",
+		"label": "Favorites 2 List (space delimited)",
+		"default": ""
+	},
+	{
+		"id": "favorites.2.sortby",
+		"type": "enum",
+		"label": "Favorites 2 Sort By",
+		"values": ["Channel Number","Favorites Order"],
+		"default": "Channel Number"
+	},
+	{
+		"id": "favorites.3.enable",
+		"type": "bool",
+		"label": "Favorites 3 Enable",
+		"default": "false"
+	},
+	{
+		"id": "favorites.3.name",
+		"type": "text",
+		"label": "Favorites 3 Name",
+		"default": "Favorites #3"
+	},
+	{
+		"id": "favorites.3.list",
+		"type": "text",
+		"label": "Favorites 3 List (space delimited)",
+		"default": ""
+	},
+	{
+		"id": "favorites.3.sortby",
+		"type": "enum",
+		"label": "Favorites 3 Sort By",
+		"values": ["Channel Number","Favorites Order"],
+		"default": "Channel Number"
+	},
+	{
+		"id": "favorites.4.enable",
+		"type": "bool",
+		"label": "Favorites 4 Enable",
+		"default": "false"
+	},
+	{
+		"id": "favorites.4.name",
+		"type": "text",
+		"label": "Favorites 4 Name",
+		"default": "Favorites #4"
+	},
+	{
+		"id": "favorites.4.list",
+		"type": "text",
+		"label": "Favorites 4 List (space delimited)",
+		"default": ""
+	},
+	{
+		"id": "favorites.4.sortby",
+		"type": "enum",
+		"label": "Favorites 4 Sort By",
+		"values": ["Channel Number","Favorites Order"],
+		"default": "Channel Number"
+	},
+	{
+		"id": "favorites.5.enable",
+		"type": "bool",
+		"label": "Favorites 5 Enable",
+		"default": "false"
+	},
+	{
+		"id": "favorites.5.name",
+		"type": "text",
+		"label": "Favorites 5 Name",
+		"default": "Favorites #5"
+	},
+	{
+		"id": "favorites.5.list",
+		"type": "text",
+		"label": "Favorites 5 List (space delimited)",
+		"default": ""
+	},
+	{
+		"id": "favorites.5.sortby",
+		"type": "enum",
+		"label": "Favorites 5 Sort By",
+		"values": ["Channel Number","Favorites Order"],
+		"default": "Channel Number"
+	},
+	{
+		"id": "favorites.6.enable",
+		"type": "bool",
+		"label": "Favorites 6 Enable",
+		"default": "false"
+	},
+	{
+		"id": "favorites.6.name",
+		"type": "text",
+		"label": "Favorites 6 Name",
+		"default": "Favorites #6"
+	},
+	{
+		"id": "favorites.6.list",
+		"type": "text",
+		"label": "Favorites 6 List (space delimited)",
+		"default": ""
+	},
+	{
+		"id": "favorites.6.sortby",
+		"type": "enum",
+		"label": "Favorites 6 Sort By",
+		"values": ["Channel Number","Favorites Order"],
+		"default": "Channel Number"
+	},
+	{
+		"id": "favorites.7.enable",
+		"type": "bool",
+		"label": "Favorites 7 Enable",
+		"default": "false"
+	},
+	{
+		"id": "favorites.7.name",
+		"type": "text",
+		"label": "Favorites 7 Name",
+		"default": "Favorites #7"
+	},
+	{
+		"id": "favorites.7.list",
+		"type": "text",
+		"label": "Favorites 7 List (space delimited)",
+		"default": ""
+	},
+	{
+		"id": "favorites.7.sortby",
+		"type": "enum",
+		"label": "Favorites 7 Sort By",
+		"values": ["Channel Number","Favorites Order"],
+		"default": "Channel Number"
+	},
+	{
+		"id": "favorites.8.enable",
+		"type": "bool",
+		"label": "Favorites 8 Enable",
+		"default": "false"
+	},
+	{
+		"id": "favorites.8.name",
+		"type": "text",
+		"label": "Favorites 8 Name",
+		"default": "Favorites #8"
+	},
+	{
+		"id": "favorites.8.list",
+		"type": "text",
+		"label": "Favorites 8 List (space delimited)",
+		"default": ""
+	},
+	{
+		"id": "favorites.8.sortby",
+		"type": "enum",
+		"label": "Favorites 8 Sort By",
+		"values": ["Channel Number","Favorites Order"],
+		"default": "Channel Number"
+	},
+	{
+		"id": "favorites.9.enable",
+		"type": "bool",
+		"label": "Favorites 9 Enable",
+		"default": "false"
+	},
+	{
+		"id": "favorites.9.name",
+		"type": "text",
+		"label": "Favorites 9 Name",
+		"default": "Favorites #9"
+	},
+	{
+		"id": "favorites.9.list",
+		"type": "text",
+		"label": "Favorites 9 List (space delimited)",
+		"default": ""
+	},
+	{
+		"id": "favorites.9.sortby",
+		"type": "enum",
+		"label": "Favorites 9 Sort By",
+		"values": ["Channel Number","Favorites Order"],
+		"default": "Channel Number"
+	},
+	{
+		"id": "favorites.10.enable",
+		"type": "bool",
+		"label": "Favorites 10 Enable",
+		"default": "false"
+	},
+	{
+		"id": "favorites.10.name",
+		"type": "text",
+		"label": "Favorites 10 Name",
+		"default": "Favorites #10"
+	},
+	{
+		"id": "favorites.10.list",
+		"type": "text",
+		"label": "Favorites 10 List (space delimited)",
+		"default": ""
+	},
+	{
+		"id": "favorites.10.sortby",
+		"type": "enum",
+		"label": "Favorites 10 Sort By",
+		"values": ["Channel Number","Favorites Order"],
+		"default": "Channel Number"
+	}
+]
