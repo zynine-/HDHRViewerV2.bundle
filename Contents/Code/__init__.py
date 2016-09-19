@@ -51,11 +51,11 @@ CACHETIME_HDHR_GUIDE = 3600 # (s) Default: 3600 = 1 hour
 
 
 #CONSTANTS/PARAMETERS
-TIMEOUT = 5                 # XML Timeout (s)
-CACHETIME = 5              # Cache Time (s) Default : 5s
-MAX_FAVORITES = 10          # Max number of favorites supported
-VIDEO_DURATION = 14400000   # Duration for Transcoder (ms) 14400000 = 4 hours
-MAX_SIZE = 90971520			# [Bytes] 20971520 = 20MB Default: 90971520 (100MB)
+TIMEOUT = 5                 # XML Timeout (s); Default = 5
+CACHETIME = 5               # Cache Time (s); Default = 5
+MAX_FAVORITES = 10          # Max number of favorites supported; Default = 10
+VIDEO_DURATION = 14400000   # Duration for Transcoder (ms); Default = 14400000 (4 hours)
+MAX_SIZE = 90971520         # [Bytes] 20971520 = 20MB; Default: 90971520 (100MB)
 
 
 ###################################################################################################
@@ -603,6 +603,7 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
     #v0.4 auto transcode based off lazybones code with some modifications
     #v0.5 transcode rewritten and corrected.
     
+    #v0.7d force transcode=none for non HDTC-2US models.
     if GetDeviceModel()=="HDTC-2US":
         transcode = Prefs["transcode"]
     else:
