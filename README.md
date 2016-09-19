@@ -1,2 +1,2 @@
-# HDHRViewer2.bundle
+# HDHRViewerV2.bundle
 HDHomeRun + Plex
