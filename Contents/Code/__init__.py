@@ -17,7 +17,7 @@ from lxml import etree
 
 TITLE                = 'HDHR Viewer 2'
 PREFIX               = '/video/hdhrviewer_v2'
-VERSION              = '0.07c'
+VERSION              = '0.07d'
 ART                  = 'art-default.jpg'
 ICON                 = 'icon-default.png'
 SUBBED_LIST_ICON     = 'icon-subscribed.png'
@@ -588,6 +588,12 @@ def GetDeviceAuth():
     DeviceAuth = jsonDiscover.get("DeviceAuth")
     return DeviceAuth
     
+def GetDeviceModel():
+    jsonDiscoverUrl = URL_HDHR_DISCOVER.format(ip=Prefs[PREFS_HDHR_IP])
+    jsonDiscover = JSON.ObjectFromURL(jsonDiscoverUrl,timeout=TIMEOUT)
+    DeviceModel = jsonDiscover.get("ModelNumber")
+    return DeviceModel
+    
     
 ###################################################################################################
 # This function is taken straight (well, almost) from the HDHRViewer codebase
@@ -597,7 +603,12 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
     #v0.4 auto transcode based off lazybones code with some modifications
     #v0.5 transcode rewritten and corrected.
     
-    if Prefs["transcode"]=="auto":
+    if GetDeviceModel()=="HDTC-2US":
+        transcode = Prefs["transcode"]
+    else:
+        transcode = "none"
+    
+    if transcode=="auto":
         #AUTO TRANSCODE
         vo = VideoClipObject(
             rating_key = url,
@@ -655,7 +666,7 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                 ),
             ]
         )
-    elif Prefs["transcode"]=="none":
+    elif transcode=="none":
         vo = VideoClipObject(
             rating_key = url,
             key = Callback(CreateVO, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles),
