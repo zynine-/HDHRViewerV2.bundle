@@ -3,7 +3,7 @@
 		"id": "hdhomerun_ip",
 		"type": "text",
 		"label": "HDHomeRun IP",
-		"default": "192.168.1.241"
+		"default": "192.168.1.111"
 	},
 	{
 		"id": "hdhomerun_tuner",
