@@ -60,6 +60,7 @@ Some browser may have playback issues with HTML5 player, disable HTML5 player.
 - Chrome - Disable HTML5 player if there are playback issues.
 
 ### Limited compatibility
+- HTC 7 (Android 5) - Use External Plater (VLC)
 - Firefox - Disable HTML5 player
 - Plex Media Player (PMP) - PMS does not transcode to PMP, therefore high bandwidth required. No remote viewing capabilities, maybe possible with VPN but still requires high bandwidth. 
 
