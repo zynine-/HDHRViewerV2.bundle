@@ -632,8 +632,8 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                     bitrate = 8000,
                     video_codec = VideoCodec.H264,
                     audio_codec = "AC3",
-                    audio_channels = 2,
-                    optimized_for_streaming = False
+                    audio_channels = 6,
+                    optimized_for_streaming = True
                 ),
                 MediaObject(
                     parts = [PartObject(key=(url+"?transcode=mobile"))],
@@ -642,8 +642,8 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                     bitrate = 2000,
                     video_codec = VideoCodec.H264,
                     audio_codec = "AC3",
-                    audio_channels = 2,
-                    optimized_for_streaming = False
+                    audio_channels = 6,
+                    optimized_for_streaming = True
                 ),
                 MediaObject(
                     parts = [PartObject(key=(url+"?transcode=internet480"))],
@@ -652,8 +652,8 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                     bitrate = 1500,
                     video_codec = VideoCodec.H264,
                     audio_codec = "AC3",
-                    audio_channels = 2,
-                    optimized_for_streaming = False
+                    audio_channels = 6,
+                    optimized_for_streaming = True
                 ),
                 MediaObject(
                     parts = [PartObject(key=(url+"?transcode=internet240"))],
@@ -662,8 +662,8 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                     bitrate = 720,
                     video_codec = VideoCodec.H264,
                     audio_codec = "AC3",
-                    audio_channels = 2,
-                    optimized_for_streaming = False
+                    audio_channels = 6,
+                    optimized_for_streaming = True
                 ),
             ]
         )
@@ -689,8 +689,8 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                     bitrate = 20000,
                     video_codec = "mpeg2video", #0.07a: changed for all pre and 0.9.17.2
                     audio_codec = "AC3",
-                    audio_channels = 2,
-                    optimized_for_streaming = False
+                    audio_channels = 6,
+                    optimized_for_streaming = True
                 )
             ]   
         )
@@ -716,8 +716,8 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                     container = "mpegts",
                     video_codec = VideoCodec.H264,
                     audio_codec = "AC3",
-                    audio_channels = 2,
-                    optimized_for_streaming = False
+                    audio_channels = 6,
+                    optimized_for_streaming = True
                 )
             ]   
         )
