@@ -53,7 +53,7 @@ Some browser may have playback issues with HTML5 player, disable HTML5 player. R
 - Chrome - Disable HTML5 player if there are playback issues.
 
 ### Limited compatibility
-- HTC M7 (Android 5) - Use External Player (VLC) but doesn't seem to transcode?
+- HTC M7 (Android 5) - Use External Player (VLC) but doesn't seem to transcode? Refer to Known Anomalies->Android support
 - Firefox - Disable HTML5 player
 - Plex Media Player (PMP) - PMS does not transcode to PMP, therefore high bandwidth required. No remote viewing capabilities, maybe possible with VPN but still requires high bandwidth. 
 
@@ -74,4 +74,4 @@ Ways to reduce loading times or stutters:
 - Set higher quality, or the highest your network bandwidth/connection allows.
 
 ###Android support
-Since PMS 0.9.17.x, Android devices without AC3 codec have playback issues. You can use *VLC for Android* as *External Player*, but it doesn't transcode the stream.
+Since PMS 0.9.17.x, Android devices without AC3 codec have playback issues. You can use *VLC for Android* as *External Player*, but it doesn't transcode the stream. Instead, use the Android.xml from <https://github.com/zynine-/PlexDeinterlaceProfiles>
