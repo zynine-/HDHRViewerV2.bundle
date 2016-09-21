@@ -55,11 +55,12 @@ Some browser may have playback issues with HTML5 player, disable HTML5 player.
 
 ###Interlacing
 
-Deinterlacing is achieved by replacing xml profiles, <https://github.com/zynine-/PlexDeinterlaceProfiles>
+There is no known method of forcing deinterlacing support from plug-in level. Deinterlacing is achieved by replacing xml profiles, <https://github.com/zynine-/PlexDeinterlaceProfiles>.
 
 ###Slow buffer or stutters on some clients
 
-On some clients, setting a lower stream quality may increase loading, or stutters.
+On some clients, setting a lower stream quality may increase loading, or stutters. This is due to the video chunk size; PMS seem to love 4MB chunk sizes.
+
 Ways to reduce loading times or stutters:
 - Disable HTML5 if you are using a browser
-- Set the higher quality, or the highest your network bandwidth/connection allows)
+- Set higher quality, or the highest your network bandwidth/connection allows.
