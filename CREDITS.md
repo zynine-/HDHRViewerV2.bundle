@@ -5,4 +5,6 @@ Credits
 - [lazybones@plex](https://forums.plex.tv/user/80977-lazybones/)
   Auto Transcode
 - [hychiang@plex](https://forums.plex.tv/profile/hychiang)
-  V2code: favorites, restapi + Channel-App-Guide
+  HDHRViewerV2.bundle original code, favorites, restapi + Channel-App-Guide
+- [roberto188@plex](https://forums.plex.tv/profile/roberto188)
+  Deinterlace
