@@ -1,22 +1,15 @@
 # HDHRViewerV2.bundle
 Watch Live TV on Plex using HDHomeRun, at home or remotely. Compatibility may vary by Plex Media Server (PMS) version, Plex client version, etc... 
 
-## Current Development/Test Setup
-### HDHomeRun
-- HDHomeRun PLUS/EXTEND (HDTC-2US) + Firmware: 20160621atest1
+## Installation
+### Unsupported AppStore V2 (UAS V2)
+Available through UAS V2 <https://forums.plex.tv/discussion/202282/unsupported-appstore-v2-as-in-totally-unsupported>
 
-### Plex Media Server (PMS)
-- PMS 1.1.4.2757 on Windows 10
+### Manual Installation
+Copy HDHRViewerV2.bundle to Plex Plug-in Directory. [How do I find the Plug-Ins folder?](https://support.plex.tv/hc/en-us/articles/201106098-How-do-I-find-the-Plug-Ins-folder-)
 
-### Plex Clients
-- Chrome (Windows 10)
-- Firefox  (Windows 10)
-- IE (Windows 10)
-- Edge (Windows 10)
-- Roku 3
-- Amazon Fire TV (2014)
-- Android (HTC 10)
-
+### Scripts
+Run install scripts included.
 
 ## HDHomeRun Compatibility
 
@@ -53,7 +46,7 @@ Estimated CPU requirement for 1080i MPEGTS transcoding:
 
 ## Client Compatibility
 
-Some browser may have playback issues with HTML5 player, disable HTML5 player.
+Some browser may have playback issues with HTML5 player, disable HTML5 player. Refer to Known Anomalies for more info.
 
 ### Full compatibility:
 - Android 6 (HTC 10)
@@ -79,3 +72,6 @@ On some clients, setting a lower stream quality may increase loading, or stutter
 Ways to reduce loading times or stutters:
 - Disable HTML5 if you are using a browser
 - Set higher quality, or the highest your network bandwidth/connection allows.
+
+###Android support
+Since PMS 0.9.17.x, Android devices without AC3 codec have playback issues. You can use *VLC for Android* as *External Player*, but it doesn't transcode the stream.
