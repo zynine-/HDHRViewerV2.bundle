@@ -1,0 +1,1 @@
+XCOPY HDHRViewerV2.bundle "%LOCALAPPDATA%\Plex Media Server\Plug-ins\HDHRViewerV2.bundle" /E /I /Y
