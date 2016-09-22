@@ -55,7 +55,7 @@ Some browser may have playback issues with HTML5 player, disable HTML5 player. R
 ### Limited compatibility
 - HTC M7 (Android 5) - Use External Player (VLC) but doesn't seem to transcode? Refer to Known Anomalies->Android support
 - Firefox - Disable HTML5 player
-- Plex Media Player (PMP) - PMS does not transcode to PMP, therefore high bandwidth required. No remote viewing capabilities, maybe possible with VPN but still requires high bandwidth. 
+- Plex Media Player (PMP) - PMS does not transcode to PMP if **Settings->Video->Online Quality = Original**
 
 ### Not Compatible
 
