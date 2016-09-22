@@ -48,16 +48,7 @@ Estimated CPU requirement for 1080i MPEGTS transcoding:
 
 Some browser may have playback issues with HTML5 player, disable HTML5 player. Refer to Known Anomalies for more info.
 
-### Full compatibility:
-- Android 6 (HTC 10)
-- Chrome - Disable HTML5 player if there are playback issues.
-
-### Limited compatibility
-- HTC M7 (Android 5) - Refer to **Known Anomalies->Android support**
-- Firefox - Disable HTML5 player
-- Plex Media Player (PMP) - PMS does not transcode to PMP if **Settings->Video->Online Quality = Original**
-
-### Not Compatible
+Refer to <https://github.com/zynine-/HDHRViewerV2.bundle/wiki/Server-Client-Compatibility-Report>
 
 ## Known Anomalies
 
