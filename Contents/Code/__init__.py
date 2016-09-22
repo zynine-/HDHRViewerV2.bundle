@@ -1,4 +1,4 @@
-# HDHR Viewer V2
+# HDHR Viewer V2 v0.8-beta
 
 import time
 import string
