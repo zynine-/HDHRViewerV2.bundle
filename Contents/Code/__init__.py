@@ -1,12 +1,4 @@
-###################################################################################################
-# HDHRViewer v2
-#
-# Known Issues:
-#   * Won't show xmltv program info when there is nothing showing for that channel (which is fine) 
-#     BUT it also doesn't show what's coming next in this case (not fine).  Unfortunately it is 
-#     an overall design flaw with the xmltv rest api.  Not a common case so probably lower 
-#     priority for now.
-###################################################################################################
+# HDHR Viewer V2
 
 import time
 import string
@@ -17,7 +9,7 @@ from lxml import etree
 
 TITLE                = 'HDHR Viewer 2'
 PREFIX               = '/video/hdhrviewer_v2'
-VERSION              = '0.07d'
+VERSION              = '0.8-beta'
 ART                  = 'art-default.jpg'
 ICON                 = 'icon-default.png'
 SUBBED_LIST_ICON     = 'icon-subscribed.png'
@@ -49,7 +41,6 @@ URL_HDHR_LINEUP      = 'http://{ip}/lineup.json'
 URL_HDHR_STREAM      = 'http://{ip}:5004/{tuner}/v{guideNumber}'
 CACHETIME_HDHR_GUIDE = 3600 # (s) Default: 3600 = 1 hour
 
-
 #CONSTANTS/PARAMETERS
 TIMEOUT = 5                 # XML Timeout (s); Default = 5
 CACHETIME = 5               # Cache Time (s); Default = 5
@@ -71,9 +62,7 @@ def Start():
     DirectoryObject.thumb = R(ICON)
     DirectoryObject.art = R(ART)
     HTTP.CacheTime = CACHETIME
-    
 
-    
 ###################################################################################################
 # Main Menu
 ###################################################################################################
@@ -111,7 +100,6 @@ def AllChannelsMenu():
     PopulateProgramInfo(allChannels.list, False)        
     # now create the object container with all of the channels as video clip objects, and return
     return BuildChannelObjectContainer("All Channels", allChannels.list)
-
 
 ###################################################################################################
 # This function produces a directory for all channels the user is subscribed to
@@ -173,9 +161,7 @@ def SearchResultsChannelsMenu(query):
 
     # now create the object container with all of the channels as video clip objects, and return
     return BuildChannelObjectContainer("Search: " + query,channels)
-    
 
-    
 ###################################################################################################
 # Utility function to populate the channels, including the program info if enabled in preferences
 ###################################################################################################
@@ -188,7 +174,6 @@ def BuildChannelObjectContainer(title, channels):
         program = channel.program
         oc.add(CreateVO(url=channel.streamUrl,title=GetVcoTitle(channel), year=GetVcoYear(program), tagline=GetVcoTagline(program), summary=GetVcoSummary(program), starRating=GetVcoStarRating(program), thumb=GetVcoIcon(channel,program)))
     return oc
-    
 
 ###################################################################################################
 # This function populates the channel with XMLTV program info coming from the xmltv rest service
@@ -197,7 +182,7 @@ def PopulateProgramInfo(channels, partialQuery):
 
     allProgramsMap = {}
     
-	#restapi
+    #restapi
     if isXmlTvModeRestApi():
     # load all programs into a map (from channel display name -> program)
         xmltvApiUrl = ConstructApiUrl(channels,partialQuery)
@@ -208,10 +193,10 @@ def PopulateProgramInfo(channels, partialQuery):
         except Exception as inst:
             Log.Error(xstr(type(inst)) + ": " + xstr(inst.args) + ": " + xstr(inst))
             return
+
     #xmltv hdhomerun
     elif ixXmlTvModeHDHomeRun():
         xmltvApiUrl = URL_HDHR_GUIDE.format(deviceAuth=GetDeviceAuth())
-        
         try:
             jsonChannelPrograms = JSON.ObjectFromURL(xmltvApiUrl,cacheTime=CACHETIME_HDHR_GUIDE)
             allProgramsMap = BuildChannelToProgramMapFromProgramJson(jsonChannelPrograms)
@@ -232,6 +217,7 @@ def PopulateProgramInfo(channels, partialQuery):
         except Exception as inst:
             Log.Error(xstr(type(inst)) + ": " + xstr(inst.args) + ": " + xstr(inst))
             return
+            
     else:
 	    return
 
@@ -272,6 +258,7 @@ def BuildChannelToProgramMapFromProgramJson(jsonChannelPrograms):
             for displayName in jsonChannelDisplayNames:
                 #Log.Debug(displayName)
                 allProgramsMap[displayName] = program
+                
     elif ixXmlTvModeHDHomeRun():
         for jsonChannelProgram in jsonChannelPrograms:
             # parse the program and the next programs if they exist
@@ -294,7 +281,10 @@ def BuildChannelToProgramMapFromProgramJson(jsonChannelPrograms):
             
     return allProgramsMap
 
-#XMLTV iterparse     
+###################################################################################################
+# XMLTV File mode iterparse
+###################################################################################################    
+
 def BuildChannelToProgramMapFromFile(channellist):
 
     t = time.time()    
@@ -366,7 +356,6 @@ def BuildChannelToProgramMapFromFile(channellist):
 
     return allProgramsMap
     
-    
 ###################################################################################################
 # This function returns whether the xmltv_mode is set to restapi or hdhomerun
 ###################################################################################################
@@ -430,9 +419,6 @@ def ParseProgramJson(jsonProgram):
         starRating = xstr("")
         icon = xstr(jsonProgram.get("ImageURL",""))
     return Program(startTime,stopTime,title,date,subTitle,desc,icon,starRating)
-    
-
-    
 
 ###################################################################################################
 # This function returns the title to be used with the VideoClipObject
@@ -538,7 +524,6 @@ def LoadEnabledFavorites():
             favorites.append(favorite)
     return favorites
 
-    
 ###################################################################################################
 # This function loads the favorite identified by the index i
 ###################################################################################################
@@ -549,7 +534,6 @@ def LoadFavorite(i):
     sortBy = Prefs['favorites.' + str(i) + '.sortby']
     return Favorite(i,enable,name,list, sortBy)
 
-    
 ###################################################################################################
 # This function loads the full channel list from the configured hdhrviewer host
 ###################################################################################################
@@ -593,22 +577,20 @@ def GetDeviceModel():
     jsonDiscover = JSON.ObjectFromURL(jsonDiscoverUrl,timeout=TIMEOUT)
     DeviceModel = jsonDiscover.get("ModelNumber")
     return DeviceModel
-    
-    
+
 ###################################################################################################
-# This function is taken straight (well, almost) from the HDHRViewer codebase
+# This function is taken straight (well, almost) from the HDHRViewer V1 codebase
 ###################################################################################################
 @route(PREFIX + "/CreateVO")
 def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHANNEL_ICON), starRating=0, include_container=False, checkFiles=0):
-    #v0.4 auto transcode based off lazybones code with some modifications
-    #v0.5 transcode rewritten and corrected.
-    
-    #v0.7d force transcode=none for non HDTC-2US models.
+    #v0.8 force transcode=none for non HDTC-2US models.
     if GetDeviceModel()=="HDTC-2US":
         transcode = Prefs["transcode"]
     else:
         transcode = "none"
-    
+
+    #v0.4 auto transcode based off lazybones code with some modifications
+    #v0.5 transcode rewritten and corrected.
     if transcode=="auto":
         #AUTO TRANSCODE
         vo = VideoClipObject(
