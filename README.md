@@ -48,21 +48,11 @@ Estimated CPU requirement for 1080i MPEGTS transcoding:
 
 Some browser may have playback issues with HTML5 player, disable HTML5 player. Refer to Known Anomalies for more info.
 
-Refer to <https://github.com/zynine-/HDHRViewerV2.bundle/wiki/Server-Client-Compatibility-Report>
+Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/wiki/Compatibility-Report>
 
-## Known Anomalies
+## Common Issues and Resolution
 
-###Interlacing
-
-There is no known method of forcing deinterlacing support from plug-in level. Deinterlacing is achieved by replacing xml profiles, <https://github.com/zynine-/PlexDeinterlaceProfiles>.
-
-###Slow buffer or stutters on some clients
-
-On some clients, setting a lower stream quality may increase loading, or stutters. This is due to the video chunk size; PMS seem to love 4MB chunk sizes.
-
-Ways to reduce loading times or stutters:
-- Disable HTML5 if you are using a browser
-- Set higher quality, or the highest your network bandwidth/connection allows.
-
-###Android support
-Since PMS 0.9.17.x, Android devices without AC3 codec have playback issues. You can use *VLC for Android* as *External Player*, but it doesn't transcode the stream. Instead, use the Android.xml from <https://github.com/zynine-/PlexDeinterlaceProfiles>
+- Android playback issue
+- Slow buffering or stutters on some clients:
+- Interlacing
+Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/issues?q=label%3A%22common+issues%22>
