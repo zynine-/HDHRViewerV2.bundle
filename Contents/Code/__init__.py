@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.8-beta
+# HDHR Viewer V2 v0.8-beta-2
 
 import time
 import string
@@ -9,7 +9,7 @@ from lxml import etree
 
 TITLE                = 'HDHR Viewer 2'
 PREFIX               = '/video/hdhrviewer_v2'
-VERSION              = '0.8-beta'
+VERSION              = '0.8-beta-2'
 ART                  = 'art-default.jpg'
 ICON                 = 'icon-default.png'
 SUBBED_LIST_ICON     = 'icon-subscribed.png'
@@ -68,11 +68,11 @@ def Start():
 ###################################################################################################
 @handler(PREFIX, TITLE, art=ART, thumb=ICON)
 def MainMenu():
-   
+
     GetInfo()
     favoritesList = LoadEnabledFavorites()
     oc = ObjectContainer(view_group='InfoList')
-    
+
     # add All Channels menu (displays all channels the user is subscribed to)
     oc.add(DirectoryObject(key=Callback(AllChannelsMenu), title='All Channels', thumb=R(SUBBED_LIST_ICON)))
 
@@ -83,10 +83,10 @@ def MainMenu():
     # search programs playing now
     if isXmlTvModeRestApi():
         oc.add(InputDirectoryObject(key=Callback(SearchResultsChannelsMenu), title='Search Playing Now', thumb=R(SUBBED_LIST_ICON)))
-    
+
     # finally, include the settings menu
     oc.add(PrefsObject(title='Settings', thumb=R(SETTINGS_ICON)))
- 
+
     return oc
 
     
@@ -111,7 +111,7 @@ def FavoriteChannelsMenu(index):
 
     favorite = LoadFavorite(index)
     allChannels = LoadAllChannels()
-    
+
     channelList = []
     for channelNumber in favorite.channels:
         channel = allChannels.map.get(channelNumber)
@@ -136,7 +136,6 @@ def SearchResultsChannelsMenu(query):
     # Execute the search, and return a map of channel display-names to program
     # load all programs into a map (from channel display name -> program)
     allProgramsMap = {}
-    
 
     xmltvApiUrl = ConstructApiUrl(None,False,query)
     allProgramsMap = {}
@@ -547,6 +546,8 @@ def LoadAllChannels():
     for channel in jsonLineup:
         guideNumber = channel.get('GuideNumber')
         guideName = channel.get('GuideName','')
+        videoCodec = channel.get('VideoCodec','')
+        audioCodec = channel.get('AudioCodec','')
         streamUrl = URL_HDHR_STREAM.format(ip=Prefs[PREFS_HDHR_IP],tuner=Prefs[PREFS_HDHR_TUNER],guideNumber=guideNumber)
         if (guideName=='' or 'number' in Prefs[PREFS_LOGO_MATCH]):
             channelLogo = "logo-"+makeSafeFilename(guideNumber)+".png"
@@ -555,7 +556,7 @@ def LoadAllChannels():
         else:
             channelLogo = DEFAULT_CHANNEL_ICON
 
-        channel = Channel(guideNumber,guideName,streamUrl,channelLogo)
+        channel = Channel(guideNumber,guideName,streamUrl,channelLogo,videoCodec,audioCodec)
         allChannelsList.append(channel)
         allChannelsMap[guideNumber] = channel
 
@@ -582,20 +583,20 @@ def GetDeviceModel():
 # This function is taken straight (well, almost) from the HDHRViewer V1 codebase
 ###################################################################################################
 @route(PREFIX + "/CreateVO")
-def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHANNEL_ICON), starRating=0, include_container=False, checkFiles=0):
-    #v0.8 force transcode=none for non HDTC-2US models.
+def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHANNEL_ICON), starRating=0, include_container=False, checkFiles=0, videoCodec=VideoCodec.H264,audioCodec="AC3"):
+
     if GetDeviceModel()=="HDTC-2US":
         transcode = Prefs["transcode"]
     else:
         transcode = "none"
 
-    #v0.4 auto transcode based off lazybones code with some modifications
-    #v0.5 transcode rewritten and corrected.
     if transcode=="auto":
+        videoCodec = VideoCodec.H264
+        audioCodec = "AC3"
         #AUTO TRANSCODE
         vo = VideoClipObject(
             rating_key = url,
-            key = Callback(CreateVO, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles),
+            key = Callback(CreateVO, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec,audioCodec=audioCodec),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),
@@ -612,8 +613,8 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                     container = "mpegts",
                     video_resolution = 1080,
                     bitrate = 8000,
-                    video_codec = VideoCodec.H264,
-                    audio_codec = "AC3",
+                    video_codec = videoCodec,
+                    audio_codec = audioCodec,
                     audio_channels = 6,
                     optimized_for_streaming = True
                 ),
@@ -622,8 +623,8 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                     container = "mpegts",
                     video_resolution = 720,
                     bitrate = 2000,
-                    video_codec = VideoCodec.H264,
-                    audio_codec = "AC3",
+                    video_codec = videoCodec,
+                    audio_codec = audioCodec,
                     audio_channels = 6,
                     optimized_for_streaming = True
                 ),
@@ -632,8 +633,8 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                     container = "mpegts",
                     video_resolution = 480,
                     bitrate = 1500,
-                    video_codec = VideoCodec.H264,
-                    audio_codec = "AC3",
+                    video_codec = videoCodec,
+                    audio_codec = audioCodec,
                     audio_channels = 6,
                     optimized_for_streaming = True
                 ),
@@ -642,8 +643,8 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                     container = "mpegts",
                     video_resolution = 240,
                     bitrate = 720,
-                    video_codec = VideoCodec.H264,
-                    audio_codec = "AC3",
+                    video_codec = videoCodec,
+                    audio_codec = audioCodec,
                     audio_channels = 6,
                     optimized_for_streaming = True
                 ),
@@ -652,7 +653,7 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
     elif transcode=="none":
         vo = VideoClipObject(
             rating_key = url,
-            key = Callback(CreateVO, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles),
+            key = Callback(CreateVO, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),
@@ -660,7 +661,6 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
             #Plex.tv & Roku3
             tagline = xstr(tagline),
             source_title = xstr(tagline),
-            #without duration, transcoding will not work... 
             duration = VIDEO_DURATION,
             thumb = thumb,
             items = [   
@@ -669,19 +669,20 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                     container = "mpegts",
                     video_resolution = 1080,
                     bitrate = 20000,
-                    video_codec = "mpeg2video", #0.07a: changed for all pre and 0.9.17.2
-                    audio_codec = "AC3",
+                    video_codec = videoCodec,
+                    audio_codec = audioCodec,
                     audio_channels = 6,
                     optimized_for_streaming = True
                 )
             ]   
         )
     else:
-        #force transcode reintroduced in v0.5
         Log.Debug(url+"?transcode="+Prefs["transcode"])
+        videoCodec = VideoCodec.H264
+        audioCodec = "AC3"
         vo = VideoClipObject(
             rating_key = url,
-            key = Callback(CreateVO, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles),
+            key = Callback(CreateVO, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),
@@ -696,8 +697,8 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                 MediaObject(
                     parts = [PartObject(key=(url+"?transcode="+Prefs["transcode"]))],
                     container = "mpegts",
-                    video_codec = VideoCodec.H264,
-                    audio_codec = "AC3",
+                    video_codec = videoCodec,
+                    audio_codec = audioCodec,
                     audio_channels = 6,
                     optimized_for_streaming = True
                 )
