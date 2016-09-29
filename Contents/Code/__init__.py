@@ -171,7 +171,7 @@ def BuildChannelObjectContainer(title, channels):
     # setup the VideoClipObjects from the channel list
     for channel in channels:
         program = channel.program
-        oc.add(CreateVO(url=channel.streamUrl,title=GetVcoTitle(channel), year=GetVcoYear(program), tagline=GetVcoTagline(program), summary=GetVcoSummary(program), starRating=GetVcoStarRating(program), thumb=GetVcoIcon(channel,program), channel.videoCodec, channel.audioCodec))
+        oc.add(CreateVO(url=channel.streamUrl,title=GetVcoTitle(channel), year=GetVcoYear(program), tagline=GetVcoTagline(program), summary=GetVcoSummary(program), starRating=GetVcoStarRating(program), thumb=GetVcoIcon(channel,program), videoCodec=channel.videoCodec, audioCodec=channel.audioCodec))
     return oc
 
 ###################################################################################################
