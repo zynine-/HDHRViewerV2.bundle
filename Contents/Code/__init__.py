@@ -775,12 +775,14 @@ class ChannelCollection:
 # Channel class definition
 ###################################################################################################
 class Channel:
-    def __init__(self,guideNumber,guideName,streamUrl,channelLogo):
+    def __init__(self,guideNumber,guideName,streamUrl,channelLogo,videoCodec,audioCodec):
         self.number = guideNumber
         self.name = guideName
         self.streamUrl = streamUrl
         self.program = None
         self.logo = channelLogo
+        self.videoCodec = videoCodec
+        self.audioCodec = audioCodec
         
     def setProgramInfo(self,program):
         self.program = program
