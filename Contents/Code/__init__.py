@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.8-beta-2
+# HDHR Viewer V2 v0.8.0
 
 import time
 import string
@@ -588,6 +588,7 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
     if GetDeviceModel()=="HDTC-2US":
         transcode = Prefs["transcode"]
     else:
+        #force default for non transcode models
         transcode = "default"
 
     if transcode=="auto":
