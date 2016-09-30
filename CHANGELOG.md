@@ -1,5 +1,4 @@
 ##0.8.0
-- Potential Versioning format change
 - Audio / Video Codec detection for better playback
 
 ##0.07c (2016-06-23)
