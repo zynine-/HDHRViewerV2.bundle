@@ -9,7 +9,7 @@ from lxml import etree
 
 TITLE                = 'HDHR Viewer 2'
 PREFIX               = '/video/hdhrviewer_v2'
-VERSION              = '0.8-beta-2'
+VERSION              = '0.8.0'
 ART                  = 'art-default.jpg'
 ICON                 = 'icon-default.png'
 SUBBED_LIST_ICON     = 'icon-subscribed.png'
