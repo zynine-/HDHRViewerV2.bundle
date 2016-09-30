@@ -9,4 +9,4 @@ Credits
 - [roberto188@plex](https://forums.plex.tv/profile/roberto188)
   Deinterlace
 - [chateaukok@plex](https://forums.plex.tv/profile/chateaukok) (P. Kok) 
-  optimization/fix for audiocodec & videocodec
+  audiocodec & videocodec detection
