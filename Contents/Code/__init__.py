@@ -588,7 +588,7 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
     if GetDeviceModel()=="HDTC-2US":
         transcode = Prefs["transcode"]
     else:
-        transcode = "none"
+        transcode = "default"
 
     if transcode=="auto":
         videoCodec = VideoCodec.H264
@@ -650,7 +650,7 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
                 ),
             ]
         )
-    elif transcode=="none":
+    elif transcode=="default":
         vo = VideoClipObject(
             rating_key = url,
             key = Callback(CreateVO, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec),
@@ -677,9 +677,10 @@ def CreateVO(url, title, year=None, tagline="", summary="", thumb=R(DEFAULT_CHAN
             ]   
         )
     else:
-        Log.Debug(url+"?transcode="+Prefs["transcode"])
-        videoCodec = VideoCodec.H264
-        audioCodec = "AC3"
+        Log.Debug(url+"?transcode="+transcode)
+        if transcode<>"none":
+            videoCodec = VideoCodec.H264
+	    audioCodec = "AC3"
         vo = VideoClipObject(
             rating_key = url,
             key = Callback(CreateVO, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec),
