@@ -56,7 +56,7 @@
 		"id": "transcode",
 		"type": "enum",
 		"label": "Pre-Transcode (HDTC-2US only)",
-		"values": ["none","auto","heavy","mobile","internet540","internet480","internet360","internet240"],
+		"values": ["default","none","auto","heavy","mobile","internet540","internet480","internet360","internet240"],
 		"default": "none"
 	},
 	{

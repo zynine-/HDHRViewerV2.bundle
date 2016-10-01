@@ -1,6 +1,6 @@
 Credits
 =======
-- [josh.zeno](https://forums.plex.tv/profile/josh.zeno)
+- [josh.zeno@plex](https://forums.plex.tv/profile/josh.zeno)
   HDSurfer Plug-in
 - [lazybones@plex](https://forums.plex.tv/user/80977-lazybones/)
   Auto Transcode
@@ -8,3 +8,5 @@ Credits
   HDHRViewerV2.bundle original code, favorites, restapi + Channel-App-Guide
 - [roberto188@plex](https://forums.plex.tv/profile/roberto188)
   Deinterlace
+- [chateaukok@plex](https://forums.plex.tv/profile/chateaukok) (P. Kok) 
+  audiocodec & videocodec detection

@@ -1,5 +1,5 @@
-##0.8.0-beta
-- Potential Versioning format change
+##0.8.0
+- Audio / Video Codec detection for better playback
 
 ##0.07c (2016-06-23)
 - HDHomeRun guide fix for missing program/channel logos.
