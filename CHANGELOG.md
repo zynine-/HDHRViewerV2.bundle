@@ -1,3 +1,6 @@
+##0.8.1
+- Temporary fix for Plex for iOS 4.4: Retitled and disabled channel guide feature.
+
 ##0.8.0
 - Audio / Video Codec detection for better playback
 

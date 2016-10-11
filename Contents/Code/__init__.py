@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.8.0
+# HDHR Viewer V2 v0.8.1
 
 import time
 import string
@@ -9,7 +9,7 @@ from lxml import etree
 
 TITLE                = 'HDHR Viewer 2'
 PREFIX               = '/video/hdhrviewer_v2'
-VERSION              = '0.8.0'
+VERSION              = '0.8.1'
 ART                  = 'art-default.jpg'
 ICON                 = 'icon-default.png'
 SUBBED_LIST_ICON     = 'icon-subscribed.png'
@@ -180,6 +180,10 @@ def BuildChannelObjectContainer(title, channels):
 def PopulateProgramInfo(channels, partialQuery):
 
     allProgramsMap = {}
+
+    #tempfix disable channelguide
+    if iOSPlex44():
+        return
     
     #restapi
     if isXmlTvModeRestApi():
@@ -424,6 +428,11 @@ def ParseProgramJson(jsonProgram):
 ###################################################################################################
 def GetVcoTitle(channel):
     title = xstr(channel.number) + " - " + xstr(channel.name)
+
+    #tempfix for iOS Plex 4.4
+    if iOSPlex44():
+        title = title.replace(" ","")
+	
     if (channel.hasProgramInfo() and channel.program.title is not None):
         title += ": " + channel.program.title
     return title
@@ -747,6 +756,13 @@ def makeSafeFilename(inputFilename):
         
 def resourceExist(inputFilename):
 	return core.resource_exists(inputFilename)
+
+#tempfix    
+def iOSPlex44():
+    if Client.Product=="Plex for iOS" and Client.Version == "4.4":
+        return True
+    else:
+        return False
 		
 ###################################################################################################
 # Client Information.
