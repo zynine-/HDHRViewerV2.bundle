@@ -3,21 +3,14 @@
 		"id": "hdhomerun_ip",
 		"type": "text",
 		"label": "HDHomeRun IP",
-		"default": "192.168.1.111"
-	},
-	{
-		"id": "hdhomerun_tuner",
-		"type": "enum",
-		"label": "Tuner Preference",
-		"values": ["auto","tuner0","tuner1","tuner2"],
 		"default": "auto"
 	},
 	{
 		"id": "xmltv_mode",
 		"type": "enum",
-		"label": "XMLTV Mode",
+		"label": "XMLTV Mode (Manual Tuner only)",
 		"values": ["disable","restapi", "file", "hdhomerun"],
-		"default": "disable"
+		"default": "hdhomerun"
 	},
 	{
 		"id": "xmltv_file",
@@ -44,13 +37,6 @@
 		"label": "XMLTV Match by channel",
 		"values": ["number","name"],
 		"default": "number"
-	},
-	{
-		"id": "channellogo",
-		"type": "enum",
-		"label": "Channel Logo match by channel",
-		"values": ["name","number","restapi, name","restapi, number","hdhomerun, name","hdhomerun, number"],
-		"default": "name"
 	},
 	{
 		"id": "transcode",
