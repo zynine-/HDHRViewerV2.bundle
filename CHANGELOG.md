@@ -1,7 +1,15 @@
-##0.8.1
+##0.9.0 (2016-10-16)
+- Multituner support
+- Automatic Tuners discovery (supports hdhomerun guides/icons, no support for restapi/XMLTV)
+- Manual Tuners (all manual tuners shared restapi/XMLTV)
+- Corrected Video Codec detection (MPEG2->mpeg2video)
+- Automatic program/channel icon matching
+- Removed tuner overide (auto/tuner0/tuner1/tuner2)
+
+##0.8.1 (2016-10-10)
 - Temporary fix for Plex for iOS 4.4: Retitled and disabled channel guide feature.
 
-##0.8.0
+##0.8.0 (2016-09-30)
 - Audio / Video Codec detection for better playback
 
 ##0.07c (2016-06-23)

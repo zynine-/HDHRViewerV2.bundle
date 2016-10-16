@@ -52,7 +52,8 @@ Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/wiki/Compatibility-Rep
 
 ## Common Issues and Resolution
 
-- Android playback issue
-- Slow buffering or stutters on some clients:
-- Interlacing
-Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/issues?q=label%3A%22common+issues%22>
+- [Android playback issue](https://github.com/zynine-/HDHRViewerV2.bundle/issues/3)
+- [Slow buffering or stutters on some clients](https://github.com/zynine-/HDHRViewerV2.bundle/issues/4)
+- [Interlacing](https://github.com/zynine-/HDHRViewerV2.bundle/issues/6)
+
+https://github.com/zynine-/HDHRViewerV2.bundle/issues?q=is%3Aissue+is%3Aopen+label%3A%22common+issues%22
