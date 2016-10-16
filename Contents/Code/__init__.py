@@ -40,10 +40,8 @@ DATE_FORMAT          = '%Y%m%d'
 
 #HDHOMERUN GUIDE URL
 URL_HDHR_DISCOVER         = 'http://{ip}/discover.json'
-URL_HDHR_DISCOVER_DEVICES = 'http://192.168.1.11/discover' #dev
-#URL_HDHR_DISCOVER_DEVICES = 'http://my.hdhomerun.com/discover'
+URL_HDHR_DISCOVER_DEVICES = 'http://my.hdhomerun.com/discover'
 URL_HDHR_GUIDE            = 'http://my.hdhomerun.com/api/guide.php?DeviceAuth={deviceAuth}'
-#URL_HDHR_GUIDE            = 'http://127.0.0.1/guide.php?DeviceAuth={deviceAuth}'
 URL_HDHR_LINEUP           = 'http://{ip}/lineup.json'
 URL_HDHR_STREAM           = 'http://{ip}:5004/{tuner}/v{guideNumber}'
 CACHETIME_HDHR_GUIDE      = 3600 # (s) Default: 3600 = 1 hour
