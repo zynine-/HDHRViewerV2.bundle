@@ -1,3 +1,8 @@
+##0.9.1 (2016-10-18)
+- Multituner search for HDHomeRun/RestAPI/XMLTV-File
+- FYI XMLTV-file search does not search file name
+- Icon fixes
+
 ##0.9.0 (2016-10-16)
 - Multituner support
 - Automatic Tuners discovery (supports hdhomerun guides/icons, no support for restapi/XMLTV)
