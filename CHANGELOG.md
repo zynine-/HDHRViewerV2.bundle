@@ -1,3 +1,6 @@
+##0.9.2 (2016-10-19)
+- Various bug fixes
+
 ##0.9.1 (2016-10-18)
 - Multituner search for HDHomeRun/RestAPI/XMLTV-File
 - FYI XMLTV-file search does not search file name
