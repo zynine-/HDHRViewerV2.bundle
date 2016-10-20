@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.2
+# HDHR Viewer V2 v0.9.3
 
 import time
 import string
@@ -7,9 +7,9 @@ import urllib
 import os
 from lxml import etree
 
-TITLE                = 'HDHR Viewer 2 (0.9.2)'
+TITLE                = 'HDHR Viewer 2 (0.9.3)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.2'
+VERSION              = '0.9.3'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -56,6 +56,7 @@ MAX_SIZE = 90971520         # [Bytes] 20971520 = 20MB; Default: 90971520 (100MB)
 
 AUDIO_CHANNELS = 2          # 2 - stereo; 6 - 5.1
 MEDIA_CONTAINER = 'mpegts'  # mpegts
+VIDEO_CODEC = 'mpeg2video'  # MPEG2 default codec
 
 ###################################################################################################
 # Entry point - set up default values for all containers
@@ -321,12 +322,15 @@ def QueryChannelsFile(oc,tuneridx,query):
 # Utility function to populate the channels, including the program info if enabled in preferences
 ###################################################################################################
 
-def AddChannelObjectContainer(oc, tuneridx, title, channels,search=False):
-
+def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
+    if search:
+        strSearch=1
+    else:
+        strSearch=0
     # setup the VideoClipObjects from the channel list
     for channel in channels:
         program = channel.program
-        oc.add(CreateVO(tuneridx=tuneridx, url=channel.streamUrl,title=GetVcoTitle(channel), year=GetVcoYear(program), tagline=GetVcoTagline(program), summary=GetVcoSummary(program), starRating=GetVcoStarRating(program), thumb=GetVcoIcon(channel,program), videoCodec=channel.videoCodec, audioCodec=channel.audioCodec,search=search))
+        oc.add(CreateVO(tuneridx=tuneridx, url=channel.streamUrl,title=GetVcoTitle(channel), year=GetVcoYear(program), tagline=GetVcoTagline(program), summary=GetVcoSummary(program), starRating=GetVcoStarRating(program), thumb=GetVcoIcon(channel,program), videoCodec=channel.videoCodec, audioCodec=channel.audioCodec,search=strSearch))
     return oc
 
 ###################################################################################################
@@ -350,8 +354,8 @@ def PopulateProgramInfo(tuneridx, channels, partialQuery):
     allProgramsMap = {}
 
     #tempfix disable channelguide
-    if iOSPlex44():
-        return
+    #if iOSPlex44():
+    #    return
 
     if Prefs[PREFS_XMLTV_MODE] != 'disable':
         tuner=HDHRV2.tunerDevices[tuneridx]
@@ -433,24 +437,27 @@ def ProgramMap_RestAPI(jsonChannelPrograms):
 def ProgramMap_HDHomeRun(jsonChannelPrograms):
     allProgramsMap = {}
     t = time.time()
-    for jsonChannelProgram in jsonChannelPrograms:
-        # parse the program and the next programs if they exist
-        totalPrograms = len(jsonChannelProgram["Guide"])
-        program = ParseProgramJson(XMLTV_MODE_HDHOMERUN,jsonChannelProgram["Guide"][0])
-        i=0
-        while (program.stopTime < time.time() and i<totalPrograms):
-            program = ParseProgramJson(XMLTV_MODE_HDHOMERUN,jsonChannelProgram["Guide"][i])
-            i=i+1
-        jsonNextPrograms = jsonChannelProgram["Guide"][i:min(int(Prefs["xmltv_show_next_programs_count"])+i,totalPrograms)]
-        if jsonNextPrograms is not None:
-            for jsonNextProgram in jsonNextPrograms:
-                program.next.append(ParseProgramJson(XMLTV_MODE_HDHOMERUN,jsonNextProgram))
-        if program.icon=="":
-            program.icon=jsonChannelProgram.get("ImageURL","")
-        jsonChannelDisplayNames = jsonChannelProgram.get("GuideNumber")
-        allProgramsMap[jsonChannelDisplayNames] = program
 
-    logInfo("Time taken to parse HDHOmeRun JSON: "+str(time.time()-t))
+    for jsonChannelProgram in jsonChannelPrograms:
+
+        program=None
+        for i, guide in enumerate(jsonChannelProgram['Guide']):
+            guideData = ParseProgramJson(XMLTV_MODE_HDHOMERUN,guide)
+            # Current Program
+            if(guideData.startTime < t and t < guideData.stopTime):
+                program = guideData
+            # Next Programs
+            if guideData.startTime > t and program is not None:
+                program.next.append(guideData)
+            
+        if program!=None:
+            # Backup Icon
+            if program.icon=='':
+                program.icon=jsonChannelProgram.get('ImageURL','')
+            jsonChannelDisplayNames = jsonChannelProgram['GuideNumber']
+            allProgramsMap[jsonChannelDisplayNames] = program
+
+    logInfo('Time taken to parse HDHOmeRun JSON: '+str(time.time()-t))
             
     return allProgramsMap
 
@@ -684,10 +691,6 @@ def ParseProgramJson(mode,jsonProgram):
 ###################################################################################################
 def GetVcoTitle(channel):
     title = xstr(channel.number) + " - " + xstr(channel.name)
-
-    #tempfix for iOS Plex 4.4
-    if iOSPlex44():
-        title = title.replace(" ","")
 	
     if (channel.hasProgramInfo() and channel.program.title is not None):
         title += ": " + channel.program.title
@@ -847,23 +850,29 @@ def LoadAllChannels(tuneridx):
 # This function is taken straight (well, almost) from the HDHRViewer V1 codebase
 ###################################################################################################
 @route(PREFIX + '/CreateVO')
-def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(ICON_DEFAULT_CHANNEL), starRating=0, include_container=False, checkFiles=0, videoCodec='mpeg2video',audioCodec='AC3',search=False):
+def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(ICON_DEFAULT_CHANNEL), starRating=0, include_container=False, checkFiles=0, videoCodec='mpeg2video',audioCodec='AC3',search=0):
+
+    #tempfix for iOS Plex 4.4
+    if iOSPlex44(): 
+        title = title.replace(' ',' ')
+        if tagline is not None:
+            tagline = tagline.replace(' ',' ')
+        if summary is not None:
+            summary = summary.replace(' ',' ')
 
     tuneridx_int=int(tuneridx)
     tuner = HDHRV2.tunerDevices[tuneridx_int]
 
     jsonData = getDeviceInfoJsonData(tuner)
-    logDebug(jsonData)
     modelNumber = jsonData.get('ModelNumber','unknown')
     localIP = tuner['LocalIP']
     deviceID = jsonData.get('DeviceID','unknown')
 
     uniquekey = url+deviceID+localIP
 
-    logDebug(uniquekey)
-
+    search=int(search)
     # Only append device ip for search results
-    if search and localIP!='':
+    if search==1 and localIP!='':
         title = title+' ['+localIP+']'
 
     # Allow trancoding only on HDTC-2US
@@ -874,9 +883,17 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
         logInfo('HDTC-2US not detected. No transcode option.')
         transcode = "default"
 
-    if videoCodec=='MPEG2':
-        videoCodec='mpeg2video'
-    audioCodec=audioCodec.lower()
+    # For older firmwares/products.
+    if videoCodec=='':
+        videoCodec=VIDEO_CODEC
+    elif videoCodec=='MPEG2':
+        videoCodec=VIDEO_CODEC
+    
+    # For older firmwares/products.
+    if audioCodec=='':
+        audioCodec='ac3'
+    else:
+        audioCodec.lower()
 
     #debugging purposes
     logDebug('tuner_model='+modelNumber+';video_codec='+videoCodec+';audio_codec='+audioCodec+';url='+url)
@@ -903,7 +920,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
                     parts = [PartObject(key=(url+"?transcode=heavy"))],
                     container = MEDIA_CONTAINER,
                     video_resolution = 1080,
-                    bitrate = 12000, #8000
+                    bitrate = 8000, #8000 #12000
                     video_codec = videoCodec,
                     audio_codec = audioCodec,
                     audio_channels = AUDIO_CHANNELS,
@@ -913,7 +930,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
                     parts = [PartObject(key=(url+"?transcode=mobile"))],
                     container = MEDIA_CONTAINER,
                     video_resolution = 720,
-                    bitrate = 8000, #2000
+                    bitrate = 2000, #2000 #8000
                     video_codec = videoCodec,
                     audio_codec = audioCodec,
                     audio_channels = AUDIO_CHANNELS,
@@ -923,7 +940,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
                     parts = [PartObject(key=(url+"?transcode=internet480"))],
                     container = MEDIA_CONTAINER,
                     video_resolution = 480,
-                    bitrate = 2000, #1500
+                    bitrate = 1500, #1500 #2000
                     video_codec = videoCodec,
                     audio_codec = audioCodec,
                     audio_channels = AUDIO_CHANNELS,
@@ -933,7 +950,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
                     parts = [PartObject(key=(url+"?transcode=internet240"))],
                     container = MEDIA_CONTAINER,
                     video_resolution = 240,
-                    bitrate = 1500, # 720
+                    bitrate = 720, # 720 #1500
                     video_codec = videoCodec,
                     audio_codec = audioCodec,
                     audio_channels = AUDIO_CHANNELS,
@@ -970,7 +987,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
     else:
         if transcode!='none':
             videoCodec = VideoCodec.H264
-	    audioCodec = 'AC3'
+	    audioCodec = 'ac3'
         vo = VideoClipObject(
             rating_key = uniquekey,
             key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, search=search),
