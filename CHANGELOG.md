@@ -1,6 +1,6 @@
 ##0.9.3 (2016-10-19)
 - More bug fixes for older firmwares and non HDTC-2US firmware.
-- Fix [tuner_ip] displaying in non-search results.
+- Fix [tuner_ip] showing up as suffix for channel titles in favorites or all-channels
 - Alternative iOS Plex 4.4 fix.
 
 ##0.9.2 (2016-10-19)
