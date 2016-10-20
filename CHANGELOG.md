@@ -1,3 +1,8 @@
+##0.9.3 (2016-10-19)
+- More bug fixes more older firmwares and non HDTC-2US firmware.
+- Fix [tuner_ip] displaying in non-search results.
+- Alternative iOS Plex 4.4 fix.
+
 ##0.9.2 (2016-10-19)
 - Various bug fixes
 
