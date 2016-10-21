@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.6
+# HDHR Viewer V2 v0.9.7
 
 import time
 import string
@@ -7,9 +7,11 @@ import urllib
 import os
 from lxml import etree
 
-TITLE                = 'HDHR Viewer 2 (0.9.6)'
+DEBUGMODE            = True
+TITLE                = 'HDHR Viewer 2 (0.9.7)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.6'
+VERSION              = '0.9.7'
+
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -44,11 +46,15 @@ URL_HDHR_DISCOVER_DEVICES = 'http://my.hdhomerun.com/discover'
 URL_HDHR_GUIDE            = 'http://my.hdhomerun.com/api/guide.php?DeviceAuth={deviceAuth}'
 URL_HDHR_LINEUP           = 'http://{ip}/lineup.json'
 URL_HDHR_STREAM           = 'http://{ip}:5004/{tuner}/v{guideNumber}'
-CACHETIME_HDHR_GUIDE      = 3600 # (s) Default: 3600 = 1 hour
+CACHETIME_HDHR_GUIDE      = 10 # (s) Default: 3600 = 1 hour
+
+#DEBUG
+DEBUG_URL_HDHR_DISCOVER_DEVICES = 'http://192.168.1.11/discover'
+DEBUG_URL_HDHR_GUIDE            = 'http://192.168.1.11/api/guide.php?DeviceAuth={deviceAuth}'
 
 #CONSTANTS/PARAMETERS
 TIMEOUT = 5                 # XML Timeout (s); Default = 5
-TIMEOUT_LAN = 1           # LAN Timeout (s); Default = 1
+TIMEOUT_LAN = 1             # LAN Timeout (s); Default = 1
 CACHETIME = 5               # Cache Time (s); Default = 5
 MAX_FAVORITES = 10          # Max number of favorites supported; Default = 10
 VIDEO_DURATION = 14400000   # Duration for Transcoder (ms); Default = 14400000 (4 hours)
@@ -62,13 +68,14 @@ VIDEO_CODEC = 'mpeg2video'  # MPEG2 default codec
 # Entry point - set up default values for all containers
 ###################################################################################################
 def Start():
-    
     ObjectContainer.title1 = TITLE
     ObjectContainer.art = R(ART)
 
     DirectoryObject.thumb = R(ICON)
     DirectoryObject.art = R(ART)
     HTTP.CacheTime = CACHETIME
+
+    
     
 ###################################################################################################
 # Main Menu
@@ -76,12 +83,13 @@ def Start():
 @handler(PREFIX, TITLE, art=ART, thumb=ICON)
 def MainMenu():
 
-    global HDHRV2
-    getInfo()
     HDHRV2 = Devices()
-    totalTuners = len(HDHRV2.tunerDevices)
-    logInfo('Total Tuners: '+xstr(totalTuners))
+    tuners = HDHRV2.tunerDevices
 
+    Dict['tuners'] = tuners
+
+    totalTuners = len(tuners)  
+    logInfo('Total Tuners: '+xstr(totalTuners))
     oc = ObjectContainer()
     
     # If tuners exist, show favorites, all-channels, search.
@@ -93,7 +101,7 @@ def MainMenu():
             oc.add(DirectoryObject(key=Callback(FavoriteChannelsMenu, favidx=favorite.index), title=ocTitle, thumb=R(ICON_FAV_LIST)))
 
         # All Channels - Multi-Tuner support
-        for tuneridx, tuner in enumerate(HDHRV2.tunerDevices):
+        for tuneridx, tuner in enumerate(tuners):
             ocTitle = tuner['LocalIP']+' ('+xstr(getTunerTotalChannels(tuner))+')'
             # Append M: to Manually defined tuners.
             if not tuner['autoDiscover']:
@@ -121,8 +129,9 @@ def MainMenu():
 def AllChannelsMenu(tuneridx):
     oc = ObjectContainer()
     try:
+        tuners = Dict['tuners']
         tuneridx=int(tuneridx)
-        tuner=HDHRV2.tunerDevices[tuneridx]
+        tuner=tuners[tuneridx]
         allChannels = LoadAllChannels(tuneridx)
         PopulateProgramInfo(tuneridx, allChannels.list, False)
         return AddChannelObjectContainer(oc,tuneridx,tuner['LocalIP'], allChannels.list,False)
@@ -143,14 +152,17 @@ def AllChannelsMenu(tuneridx):
 ###################################################################################################
 @route(PREFIX + '/favorite-channels')
 def FavoriteChannelsMenu(favidx):
+    
     allChannels = []
     channelList = []
     tuner_defined=False
     oc = ObjectContainer()
+
     try:
+        tuners = Dict['tuners']
         favorite = LoadFavorite(favidx)
         # If tuner IP is defined in Fav list, and exist in Tuner list
-        for tuneridx, tuner in enumerate(HDHRV2.tunerDevices):
+        for tuneridx, tuner in enumerate(tuners):
             if tuner['LocalIP']==favorite.tuner:
                 allChannels=LoadAllChannels(tuneridx)
                 tuner_defined=True
@@ -158,7 +170,7 @@ def FavoriteChannelsMenu(favidx):
         
         # If tuner IP not defined in Fav list, assume 1st tuner.
         if not tuner_defined:
-            logDebug('Tuner not defined/found in favorite list. Assuming tuner: '+HDHRV2.tunerDevices[0]['LocalIP'])
+            logDebug('Tuner not defined/found in favorite list. Assuming tuner: '+tuners[0]['LocalIP'])
             # Use first tuner...
             tuneridx=0
             allChannels=LoadAllChannels(tuneridx)
@@ -187,10 +199,12 @@ def FavoriteChannelsMenu(favidx):
 @route(PREFIX + '/search-channels')
 def SearchResultsChannelsMenu(query):
 
+
     oc = ObjectContainer(title2='Search: '+query,no_cache=True)
 
     try:
-        for tuneridx, tuner in enumerate(HDHRV2.tunerDevices):
+        tuners = Dict['tuners']
+        for tuneridx, tuner in enumerate(tuner):
             if not tuner['autoDiscover']:
                 if isXmlTvModeHDHomeRun():
                     logInfo('HDHOmeRun Search')
@@ -349,8 +363,10 @@ def PopulateProgramInfo(tuneridx, channels, partialQuery):
 
     allProgramsMap = {}
 
+    tuners = Dict['tuners']
+
     if Prefs[PREFS_XMLTV_MODE] != 'disable':
-        tuner=HDHRV2.tunerDevices[tuneridx]
+        tuner=tuners[tuneridx]
         try:
             # If automatically discovered, force HDHomeRun guide.
             if tuner['autoDiscover']:
@@ -791,11 +807,12 @@ def LoadFavorite(i):
 ###################################################################################################
 
 def LoadAllChannels(tuneridx):
+
     # Devices.tunerDevices[tuneridx]
     allChannelsList = []
     allChannelsMap = {}
 
-    tuner=HDHRV2.tunerDevices[tuneridx]
+    tuner = Dict['tuners'][tuneridx]
 
     try:
         jsonLineupUrl = tuner['LineupURL']
@@ -837,7 +854,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
             summary = summary.replace(' ',' ')
 
     tuneridx_int=int(tuneridx)
-    tuner = HDHRV2.tunerDevices[tuneridx_int]
+    tuner = Dict['tuners'][tuneridx_int]
 
     jsonData = getDeviceInfoJsonData(tuner)
     modelNumber = jsonData.get('ModelNumber','unknown')
@@ -1132,7 +1149,8 @@ def getDeviceInfoJsonData(tuner):
 ###################################################################################################
 def getGuideURL(tuneridx):
     try:
-        tuner=HDHRV2.tunerDevices[tuneridx]
+        tuners = Dict['tuners']
+        tuner=tuners[tuneridx]
         deviceAuth = getDeviceInfo(tuner,'DeviceAuth')
         info = URL_HDHR_GUIDE.format(deviceAuth=deviceAuth)
     except Exception as inst:
@@ -1167,13 +1185,11 @@ class Devices:
         self.storageServers = []
         self.tunerDevices = []
         self.manualTuner()
-        self.autoDiscover(False)
+        self.autoDiscover()
 
     # Auto Discover devices
-    def autoDiscover(self,rediscover):
+    def autoDiscover(self):
         cacheTime=None
-        if rediscover:
-            cacheTime=CACHETIME_HDHR_GUIDE
         try:
             response = xstr(HTTP.Request(URL_HDHR_DISCOVER_DEVICES,timeout=TIMEOUT,cacheTime=cacheTime))
             JSONdevices = JSON.ObjectFromString(''.join(response.splitlines()))
