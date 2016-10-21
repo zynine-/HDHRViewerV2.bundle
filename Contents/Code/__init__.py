@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.4
+# HDHR Viewer V2 v0.9.6
 
 import time
 import string
@@ -7,9 +7,9 @@ import urllib
 import os
 from lxml import etree
 
-TITLE                = 'HDHR Viewer 2 (0.9.4)'
+TITLE                = 'HDHR Viewer 2 (0.9.6)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.4'
+VERSION              = '0.9.6'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -41,8 +41,7 @@ DATE_FORMAT          = '%Y%m%d'
 #HDHOMERUN GUIDE URL
 URL_HDHR_DISCOVER         = 'http://{ip}/discover.json'
 URL_HDHR_DISCOVER_DEVICES = 'http://my.hdhomerun.com/discover'
-#URL_HDHR_GUIDE            = 'http://my.hdhomerun.com/api/guide.php?DeviceAuth={deviceAuth}'
-URL_HDHR_GUIDE            = 'http://192.168.1.11/api/guide.php?DeviceAuth={deviceAuth}'
+URL_HDHR_GUIDE            = 'http://my.hdhomerun.com/api/guide.php?DeviceAuth={deviceAuth}'
 URL_HDHR_LINEUP           = 'http://{ip}/lineup.json'
 URL_HDHR_STREAM           = 'http://{ip}:5004/{tuner}/v{guideNumber}'
 CACHETIME_HDHR_GUIDE      = 3600 # (s) Default: 3600 = 1 hour
