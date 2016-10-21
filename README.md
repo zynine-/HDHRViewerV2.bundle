@@ -50,9 +50,12 @@ Some browser may have playback issues with HTML5 player, disable HTML5 player. R
 
 Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/wiki/Compatibility-Report>
 
+## Android Playback Issue & Resolution
+
+Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/issues/3>
+
 ## Common Issues and Resolution
 
-- [Android playback issue](https://github.com/zynine-/HDHRViewerV2.bundle/issues/3)
 - [Slow buffering or stutters on some clients](https://github.com/zynine-/HDHRViewerV2.bundle/issues/4)
 - [Interlacing](https://github.com/zynine-/HDHRViewerV2.bundle/issues/6)
 
