@@ -1,4 +1,4 @@
-##0.9.5 (2016-10-20)
+##0.9.6 (2016-10-20)
 - Fix guide not appear if one of the channels is missing json 'Guide' key. (hdhomerun)
 
 ##0.9.4 (2016-10-20)
