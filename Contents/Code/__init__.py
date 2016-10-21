@@ -41,7 +41,8 @@ DATE_FORMAT          = '%Y%m%d'
 #HDHOMERUN GUIDE URL
 URL_HDHR_DISCOVER         = 'http://{ip}/discover.json'
 URL_HDHR_DISCOVER_DEVICES = 'http://my.hdhomerun.com/discover'
-URL_HDHR_GUIDE            = 'http://my.hdhomerun.com/api/guide.php?DeviceAuth={deviceAuth}'
+#URL_HDHR_GUIDE            = 'http://my.hdhomerun.com/api/guide.php?DeviceAuth={deviceAuth}'
+URL_HDHR_GUIDE            = 'http://192.168.1.11/api/guide.php?DeviceAuth={deviceAuth}'
 URL_HDHR_LINEUP           = 'http://{ip}/lineup.json'
 URL_HDHR_STREAM           = 'http://{ip}:5004/{tuner}/v{guideNumber}'
 CACHETIME_HDHR_GUIDE      = 3600 # (s) Default: 3600 = 1 hour
@@ -124,7 +125,6 @@ def AllChannelsMenu(tuneridx):
         tuneridx=int(tuneridx)
         tuner=HDHRV2.tunerDevices[tuneridx]
         allChannels = LoadAllChannels(tuneridx)
-        logType(allChannels)
         PopulateProgramInfo(tuneridx, allChannels.list, False)
         return AddChannelObjectContainer(oc,tuneridx,tuner['LocalIP'], allChannels.list,False)
         #return AddChannelObjectContainer(oc,tuneridx,'test', allChannels.list)
@@ -435,7 +435,7 @@ def ProgramMap_HDHomeRun(jsonChannelPrograms,query=None):
     for jsonChannelProgram in jsonChannelPrograms:
         program=None
         guideNumber = jsonChannelProgram['GuideNumber']
-        for i, guide in enumerate(jsonChannelProgram['Guide']):
+        for i, guide in enumerate(jsonChannelProgram.get('Guide','')):
             guideData = ParseProgramJson(XMLTV_MODE_HDHOMERUN,guide)
             guideTitle = guideData.title  # For Search Func.
             guideDesc = guideData.desc    # For Search Func.
