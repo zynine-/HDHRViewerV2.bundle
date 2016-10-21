@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.3
+# HDHR Viewer V2 v0.9.4
 
 import time
 import string
@@ -7,9 +7,9 @@ import urllib
 import os
 from lxml import etree
 
-TITLE                = 'HDHR Viewer 2 (0.9.3)'
+TITLE                = 'HDHR Viewer 2 (0.9.4)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.3'
+VERSION              = '0.9.4'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -48,7 +48,7 @@ CACHETIME_HDHR_GUIDE      = 3600 # (s) Default: 3600 = 1 hour
 
 #CONSTANTS/PARAMETERS
 TIMEOUT = 5                 # XML Timeout (s); Default = 5
-TIMEOUT_LAN = 0.1           # LAN Timeout (s); Default = 0.1
+TIMEOUT_LAN = 1           # LAN Timeout (s); Default = 1
 CACHETIME = 5               # Cache Time (s); Default = 5
 MAX_FAVORITES = 10          # Max number of favorites supported; Default = 10
 VIDEO_DURATION = 14400000   # Duration for Transcoder (ms); Default = 14400000 (4 hours)
@@ -93,7 +93,6 @@ def MainMenu():
             oc.add(DirectoryObject(key=Callback(FavoriteChannelsMenu, favidx=favorite.index), title=ocTitle, thumb=R(ICON_FAV_LIST)))
 
         # All Channels - Multi-Tuner support
-
         for tuneridx, tuner in enumerate(HDHRV2.tunerDevices):
             ocTitle = tuner['LocalIP']+' ('+xstr(getTunerTotalChannels(tuner))+')'
             # Append M: to Manually defined tuners.
@@ -110,7 +109,7 @@ def MainMenu():
         ocTitle = 'No Tuners Found.'
         oc.add(DirectoryObject(key=Callback(MainMenu), title=ocTitle, art=R(ART), thumb=R(ICON_ERROR)))
 
-    # Settings Menu
+    # Settings / Preference Menu
     oc.add(PrefsObject(title='Settings', thumb=R(ICON_SETTINGS)))
 
     return oc
@@ -158,9 +157,9 @@ def FavoriteChannelsMenu(favidx):
                 tuner_defined=True
                 break
         
-        # If tuner IP not defined in Fav list, assume primary tuner.
+        # If tuner IP not defined in Fav list, assume 1st tuner.
         if not tuner_defined:
-            logDebug('Tuner not defined in favorite list. Using primary tuner')
+            logDebug('Tuner not defined/found in favorite list. Assuming tuner: '+HDHRV2.tunerDevices[0]['LocalIP'])
             # Use first tuner...
             tuneridx=0
             allChannels=LoadAllChannels(tuneridx)
@@ -210,12 +209,11 @@ def SearchResultsChannelsMenu(query):
             # Log Total Results per Tuner
             logInfo('Total Search Results ('+getDeviceInfo(tuner,'LocalIP')+') results:'+xstr(len(oc)))
         
-
         # Log Total Results (all tuners)
         logInfo('Total Search Results (all tuners):'+xstr(len(oc)))
     
     except Exception as inst:
-        logError('SearchResultsChannelsMenu('+query+'):'+strError(inst))
+        logError('SearchResultsChannelsMenu(\''+query+'\'): '+strError(inst))
         return AddErrorObjectContainer(oc,strError(inst))
     return oc
 
@@ -261,12 +259,12 @@ def QueryChannelsHDHomeRun(oc,tuneridx,query):
 
     try:
         allChannels = LoadAllChannels(tuneridx)
-        xmltvApiUrl = getGuideURL(tuneridx)
-        jsonChannelPrograms = JSON.ObjectFromURL(xmltvApiUrl,cacheTime=CACHETIME_HDHR_GUIDE)
+        tunerGuideURL = getGuideURL(tuneridx)
+        jsonChannelPrograms = JSON.ObjectFromURL(tunerGuideURL,cacheTime=CACHETIME_HDHR_GUIDE)
         if jsonChannelPrograms==None:
             return {}
 
-        allProgramsMap = ProgramSearch_HDHomeRun(jsonChannelPrograms,query)
+        allProgramsMap = ProgramMap_HDHomeRun(jsonChannelPrograms,query)
 
         for channel in allChannels.list:
             try:
@@ -350,12 +348,7 @@ def AddErrorObjectContainer(oc,errormsg):
 ###################################################################################################
 def PopulateProgramInfo(tuneridx, channels, partialQuery):
 
-    tuner=HDHRV2.tunerDevices[tuneridx]
     allProgramsMap = {}
-
-    #tempfix disable channelguide
-    #if iOSPlex44():
-    #    return
 
     if Prefs[PREFS_XMLTV_MODE] != 'disable':
         tuner=HDHRV2.tunerDevices[tuneridx]
@@ -414,19 +407,19 @@ def PopulateProgramInfo(tuneridx, channels, partialQuery):
 # This function parses the given program json, and then builds a map from the channel display 
 # name (all of them) to the Program object
 ###################################################################################################
-def ProgramMap_RestAPI(jsonChannelPrograms):
+def ProgramMap_RestAPI(jsonChannelPrograms,query=None):
     allProgramsMap = {}
     t = time.time()
     for jsonChannelProgram in jsonChannelPrograms:
         # parse the program and the next programs if they exist
-        program = ParseProgramJson(XMLTV_MODE_RESTAPI,jsonChannelProgram["program"])
-        jsonNextPrograms = jsonChannelProgram["nextPrograms"]
+        program = ParseProgramJson(XMLTV_MODE_RESTAPI,jsonChannelProgram['program'])
+        jsonNextPrograms = jsonChannelProgram['nextPrograms']
         if jsonNextPrograms is not None:
             for jsonNextProgram in jsonNextPrograms:
                 program.next.append(ParseProgramJson(XMLTV_MODE_RESTAPI,jsonNextProgram))
                 
         # now associate all channel display names with that same program object
-        jsonChannelDisplayNames = jsonChannelProgram["channel"]["displayNames"]
+        jsonChannelDisplayNames = jsonChannelProgram['channel']['displayNames']
         for displayName in jsonChannelDisplayNames:
             allProgramsMap[displayName] = program
 
@@ -434,31 +427,40 @@ def ProgramMap_RestAPI(jsonChannelPrograms):
             
     return allProgramsMap
 
-def ProgramMap_HDHomeRun(jsonChannelPrograms):
+
+def ProgramMap_HDHomeRun(jsonChannelPrograms,query=None):
     allProgramsMap = {}
     t = time.time()
 
     for jsonChannelProgram in jsonChannelPrograms:
-
         program=None
+        guideNumber = jsonChannelProgram['GuideNumber']
         for i, guide in enumerate(jsonChannelProgram['Guide']):
             guideData = ParseProgramJson(XMLTV_MODE_HDHOMERUN,guide)
+            guideTitle = guideData.title  # For Search Func.
+            guideDesc = guideData.desc    # For Search Func.
             # Current Program
             if(guideData.startTime < t and t < guideData.stopTime):
-                program = guideData
+                if query is None:
+                    program = guideData
+                # For Search Func.
+                elif (query.lower() in guideTitle.lower()) or (query.lower() in guideTitle.lower()):
+                    program = guideData
+
             # Next Programs
-            if guideData.startTime > t and program is not None:
+            if (guideData.startTime > t) and (program is not None) and (query is not None):
                 program.next.append(guideData)
-            
+
+        #If Programs exist
         if program!=None:
-            # Backup Icon
+            # If no program icon, try to get channel icon, else leave it empty...
             if program.icon=='':
                 program.icon=jsonChannelProgram.get('ImageURL','')
-            jsonChannelDisplayNames = jsonChannelProgram['GuideNumber']
-            allProgramsMap[jsonChannelDisplayNames] = program
-
-    logInfo('Time taken to parse HDHOmeRun JSON: '+str(time.time()-t))
             
+            # Map all programs, or searched programs.
+            allProgramsMap[guideNumber] = program
+
+    logInfo('Time taken to parse/search HDHomeRun JSON: '+str(time.time()-t))            
     return allProgramsMap
 
 def ProgramMap_File(channellist):
@@ -532,30 +534,6 @@ def ProgramMap_File(channellist):
     return allProgramsMap
 
 #####################
-
-def ProgramSearch_HDHomeRun(jsonChannelPrograms,query):
-    allProgramsMap = {}
-    t = time.time()
-    for jsonChannelProgram in jsonChannelPrograms:
-        i=0
-        # parse the program and the next programs if they exist
-        totalPrograms = len(jsonChannelProgram["Guide"])
-        program = ParseProgramJson(XMLTV_MODE_HDHOMERUN,jsonChannelProgram["Guide"][0])
-        while (program.stopTime < time.time() and i<totalPrograms):
-            program = ParseProgramJson(XMLTV_MODE_HDHOMERUN,jsonChannelProgram["Guide"][i])
-            i=i+1
-        programTitle = program.title
-        programDesc = program.desc
-        if program.icon=="":
-            program.icon=jsonChannelProgram.get("ImageURL","")
-        jsonChannelDisplayNames = jsonChannelProgram.get("GuideNumber")
-        if query.lower() in programTitle.lower():
-            allProgramsMap[jsonChannelDisplayNames] = program   
-        elif query.lower() in programDesc.lower():
-            allProgramsMap[jsonChannelDisplayNames] = program
-    logInfo("Time taken to search HDHOmeRun JSON: "+str(time.time()-t))
-            
-    return allProgramsMap
 
 def ProgramSearch_File(channellist,query):
     t = time.time()    
@@ -760,16 +738,15 @@ def GetVcoIcon(channel,program):
     icon = R(ICON_UNKNOWN)
 
     # Icon detection
-    if (program is not None and program.icon is not None):
-        if program.icon.strip() != "":
-            icon = program.icon
-    elif Core.storage.resource_exists(icon_channelname):
+    if (program is not None and program.icon is not None and program.icon.strip() != ''):
+        icon = program.icon
+    elif resourceExists(icon_channelname):
         icon = R(icon_channelname)
-    elif Core.storage.resource_exists('logo-'+icon_channelname):
+    elif resourceExists('logo-'+icon_channelname):
         icon = R('logo-'+icon_channelname)
-    elif Core.storage.resource_exists(icon_channelnumber):
+    elif resourceExists(icon_channelnumber):
         icon = R(icon_channelnumber)
-    elif Core.storage.resource_exists('logo-'+icon_channelnumber):
+    elif resourceExists('logo-'+icon_channelnumber):
         icon = R('logo-'+icon_channelnumber)
         
     return icon
@@ -1054,8 +1031,8 @@ def makeSafeFilename(inputFilename):
 # Check if resource exist
 ###################################################################################################
         
-def resourceExist(inputFilename):
-	return core.resource_exists(inputFilename)
+def resourceExists(inputFilename):
+	return Core.storage.resource_exists(inputFilename)
 
 ###################################################################################################
 # python 'any' function
@@ -1209,9 +1186,10 @@ class Devices:
                 if LineupURL is not None:
                     if not xany(d['LocalIP']==device['LocalIP'] for d in self.tunerDevices):
                         device['autoDiscover'] = True
+                        logInfo('Adding auto discovered tuner: '+device['LocalIP'])
                         self.tunerDevices.append(device)
                     else:
-                        logInfo('Skipped '+device['LocalIP'])
+                        logInfo('Auto discovered tuner skipped (duplicate): '+device['LocalIP'])
 
                 #future
                 if StorageURL is not None:
@@ -1234,7 +1212,7 @@ class Devices:
                             # self.addManualTuner(tunerIP) #test
                             logInfo('Manually defined tuner skipped: '+tunerIP)
             else:
-                logInfo('No manually defined tuners.')
+                logInfo('No manually defined tuners')
 
         except Exception as inst:
             logError('Devices.manualTuner(): '+strError(inst))
@@ -1250,7 +1228,7 @@ class Devices:
             tuner['DiscoverURL'] = URL_HDHR_DISCOVER.format(ip=tunerIP)
             tuner['LineupURL'] = URL_HDHR_LINEUP.format(ip=tunerIP)
             self.tunerDevices.append(tuner)
-            logInfo('Devices.addManualTuner: '+xstr(tuner['LocalIP']))
+            logInfo('Adding manually defined tuner: '+xstr(tuner['LocalIP']))
 
         except Exception as inst:
             logError('Devices.addManualTuner('+xstr(tunerIP)+'): '+strError(inst))
