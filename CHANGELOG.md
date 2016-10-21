@@ -1,3 +1,6 @@
+##0.9.5 (2016-10-20)
+- Fix guide not appear if one of the channels is missing json 'Guide' key.
+
 ##0.9.4 (2016-10-20)
 - Fix channel icons not detected properly in RestAPI mode.
 - Increase LAN timeout to 1 second.
