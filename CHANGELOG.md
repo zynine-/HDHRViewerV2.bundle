@@ -1,6 +1,11 @@
+##0.9.4 (2016-10-20)
+- Fix channel icons not detected properly in RestAPI mode.
+- Increase LAN timeout to 1 second.
+- Minor optimization to HDHomeRun guide functions.
+
 ##0.9.3 (2016-10-19)
-- More bug fixes for older firmwares and non HDTC-2US firmware.
-- Fix [tuner_ip] showing up as suffix for channel titles in favorites or all-channels
+- More bug fixes more older firmwares and non HDTC-2US firmware.
+- Fix to display [tuner_ip] only in Search Results.
 - Alternative iOS Plex 4.4 fix.
 
 ##0.9.2 (2016-10-19)
