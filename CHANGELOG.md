@@ -1,3 +1,6 @@
+##0.9.7 (2016-10-21)
+- Potential fix for 0.9.x issues with long play back and global HDHRV2 error message.
+
 ##0.9.6 (2016-10-20)
 - Fix guide not appear if one of the channels is missing json 'Guide' key. (hdhomerun)
 
