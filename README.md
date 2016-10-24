@@ -113,4 +113,8 @@ Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/issues/3>
 - [Slow buffering or stutters on some clients](https://github.com/zynine-/HDHRViewerV2.bundle/issues/4)
 - [Interlacing](https://github.com/zynine-/HDHRViewerV2.bundle/issues/6)
 
-https://github.com/zynine-/HDHRViewerV2.bundle/issues?q=is%3Aissue+is%3Aopen+label%3A%22common+issues%22
+<https://github.com/zynine-/HDHRViewerV2.bundle/issues?q=is%3Aissue+is%3Aopen+label%3A%22common+issues%22>
+
+## Refer to the Wiki for more setups
+
+<https://github.com/zynine-/HDHRViewerV2.bundle/wiki>
