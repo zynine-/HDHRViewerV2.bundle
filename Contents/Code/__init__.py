@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (0.9.8)'
+TITLE                = 'HDHR Viewer 2 (0.9.9)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.8'
+VERSION              = '0.9.9'
 
 
 #GRAPHICS
@@ -883,7 +883,6 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
         # For older firmwares/products.
         if videoCodec in ['','MPEG2',None]:
             videoCodec=VIDEO_CODEC
-        logDebug(videoCodec)
 
         #HDTC-2US and transcoding enabled:
         if modelNumber=='HDTC-2US' and transcode not in ['default','none']:
@@ -897,7 +896,7 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
 
         #tempfix for iOS Plex 4.4
         if iOSPlex44(): 
-            title = title.replace(' ',' ')
+            vcoTitle = vcoTitle.replace(' ',' ')
             if tagline is not None:
                 tagline = tagline.replace(' ',' ')
             if summary is not None:

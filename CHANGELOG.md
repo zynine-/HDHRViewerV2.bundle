@@ -1,3 +1,6 @@
+##0.9.9 (2016-10-23)
+- Refix for iOS 4.4 after code tweaks. 
+
 ##0.9.8 (2016-10-23)
 - Changed Audio Channels from 2 to 5.1
 - Changed Max Duration from 4 hours to 10 hours
