@@ -1,3 +1,10 @@
+##0.9.8 (2016-10-23)
+- Changed Audio Channels from 2 to 5.1
+- Changed Max Duration from 4 hours to 10 hours
+- Last known tuners backup (in case internet connection goes down, automatically discovered tuners)
+- Minor aesthetic improvements
+- Some code tweaks
+
 ##0.9.7 (2016-10-21)
 - Potential fix for 0.9.x issues with long play back and global HDHRV2 error message.
 

@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.7
+# HDHR Viewer V2 v0.9.8
 
 import time
 import string
@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (0.9.7)'
+TITLE                = 'HDHR Viewer 2 (0.9.8)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.7'
+VERSION              = '0.9.8'
 
 
 #GRAPHICS
@@ -45,8 +45,8 @@ URL_HDHR_DISCOVER         = 'http://{ip}/discover.json'
 URL_HDHR_DISCOVER_DEVICES = 'http://my.hdhomerun.com/discover'
 URL_HDHR_GUIDE            = 'http://my.hdhomerun.com/api/guide.php?DeviceAuth={deviceAuth}'
 URL_HDHR_LINEUP           = 'http://{ip}/lineup.json'
-URL_HDHR_STREAM           = 'http://{ip}:5004/{tuner}/v{guideNumber}'
-CACHETIME_HDHR_GUIDE      = 10 # (s) Default: 3600 = 1 hour
+#URL_HDHR_STREAM           = 'http://{ip}:5004/{tuner}/v{guideNumber}'
+CACHETIME_HDHR_GUIDE      = 3600 # (s) Default: 3600 = 1 hour
 
 #DEBUG
 DEBUG_URL_HDHR_DISCOVER_DEVICES = 'http://192.168.1.11/discover'
@@ -57,12 +57,12 @@ TIMEOUT = 5                 # XML Timeout (s); Default = 5
 TIMEOUT_LAN = 1             # LAN Timeout (s); Default = 1
 CACHETIME = 5               # Cache Time (s); Default = 5
 MAX_FAVORITES = 10          # Max number of favorites supported; Default = 10
-VIDEO_DURATION = 14400000   # Duration for Transcoder (ms); Default = 14400000 (4 hours)
+VIDEO_DURATION = 36000000   # Duration for Transcoder (ms); Default = 36000000 (10 hours)
 MAX_SIZE = 90971520         # [Bytes] 20971520 = 20MB; Default: 90971520 (100MB)
 
-AUDIO_CHANNELS = 2          # 2 - stereo; 6 - 5.1
-MEDIA_CONTAINER = 'mpegts'  # mpegts
-VIDEO_CODEC = 'mpeg2video'  # MPEG2 default codec
+AUDIO_CHANNELS = 6          # Audio Channels = 2 - stereo; 6 - 5.1
+MEDIA_CONTAINER = 'mpegts'  # Default media container = 'mpegts'
+VIDEO_CODEC = 'mpeg2video'  # Default codec = 'mpeg2video'
 
 ###################################################################################################
 # Entry point - set up default values for all containers
@@ -74,8 +74,6 @@ def Start():
     DirectoryObject.thumb = R(ICON)
     DirectoryObject.art = R(ART)
     HTTP.CacheTime = CACHETIME
-
-    
     
 ###################################################################################################
 # Main Menu
@@ -83,17 +81,27 @@ def Start():
 @handler(PREFIX, TITLE, art=ART, thumb=ICON)
 def MainMenu():
 
+    tuners=[]
+
     HDHRV2 = Devices()
     tuners = HDHRV2.tunerDevices
-
-    Dict['tuners'] = tuners
-
     totalTuners = len(tuners)  
     logInfo('Total Tuners: '+xstr(totalTuners))
     oc = ObjectContainer()
+    last_known = False
+
+    # If totally fail to discover...
+    if totalTuners==0:
+        tuners=Dict['tuners']
+        if tuners!=None and len(tuners)>0:
+            totalTuners = len(tuners)
+            logError('No Tuners Found: Using last know tuners:' + xstr(tuners))
+        else:
+            logError('No Tuners Found: Unable to load last known tuners')
     
     # If tuners exist, show favorites, all-channels, search.
     if totalTuners>0:
+        Dict['tuners'] = tuners
         # Add any enabled favorites
         favoritesList = LoadEnabledFavorites()
         for favorite in favoritesList: 
@@ -114,8 +122,12 @@ def MainMenu():
     # If No Tuners were found. Show error message.
     else:
         logError('No Tuners Found: Check IP or internet connection...')
-        ocTitle = 'No Tuners Found.'
-        oc.add(DirectoryObject(key=Callback(MainMenu), title=ocTitle, art=R(ART), thumb=R(ICON_ERROR)))
+        errmsg = 'No Tuners Found.'
+        oc.add(PopupDirectoryObject(key=Callback(errorMessage,message=errmsg), title=errmsg, art=R(ART), thumb=R(ICON_ERROR)))
+
+    if last_known:
+        errmsg = 'Using last known tuners'
+        oc.add(PopupDirectoryObject(key=Callback(errorMessage,message=errmsg), title=errmsg, art=R(ART), thumb=R(ICON_ERROR)))
 
     # Settings / Preference Menu
     oc.add(PrefsObject(title='Settings', thumb=R(ICON_SETTINGS)))
@@ -127,20 +139,23 @@ def MainMenu():
 ###################################################################################################
 @route(PREFIX + '/all-channels')
 def AllChannelsMenu(tuneridx):
-    oc = ObjectContainer()
-    try:
-        tuners = Dict['tuners']
-        tuneridx=int(tuneridx)
-        tuner=tuners[tuneridx]
+    
+    tuners = Dict['tuners']
+    tuneridx=int(tuneridx)
+    tuner=tuners[tuneridx]
+    tuner_name=tuner.get('LocalIP','unknown')
+
+    oc = ObjectContainer(title1=tuner_name)
+    try:           
         allChannels = LoadAllChannels(tuneridx)
         PopulateProgramInfo(tuneridx, allChannels.list, False)
         return AddChannelObjectContainer(oc,tuneridx,tuner['LocalIP'], allChannels.list,False)
         #return AddChannelObjectContainer(oc,tuneridx,'test', allChannels.list)
 
     except Exception as inst:
-        logError('AllChannelsMenu(tuneridx)'+'tuneridx='+xstr(tuneridx))
+        logError('AllChannelsMenu('+xstr(tuneridx)+')')
         logError(strError(inst))
-        return AddErrorObjectContainer(oc,'AllChannelsMenu(tuneridx);tuneridx='+xstr(tuneridx)+';'+strError(inst))
+        return AddErrorObjectContainer(oc,'AllChannelsMenu('+xstr(tuneridx)+');'+strError(inst))
     
     return oc
 
@@ -156,11 +171,15 @@ def FavoriteChannelsMenu(favidx):
     allChannels = []
     channelList = []
     tuner_defined=False
-    oc = ObjectContainer()
+    
+    tuners = Dict['tuners']
+    favorite = LoadFavorite(favidx)
+    ocTitle = favorite.name
+
+    oc = ObjectContainer(title1=ocTitle)
 
     try:
-        tuners = Dict['tuners']
-        favorite = LoadFavorite(favidx)
+        
         # If tuner IP is defined in Fav list, and exist in Tuner list
         for tuneridx, tuner in enumerate(tuners):
             if tuner['LocalIP']==favorite.tuner:
@@ -199,12 +218,11 @@ def FavoriteChannelsMenu(favidx):
 @route(PREFIX + '/search-channels')
 def SearchResultsChannelsMenu(query):
 
-
-    oc = ObjectContainer(title2='Search: '+query,no_cache=True)
+    oc = ObjectContainer(title1='Search: '+query,no_cache=True)
 
     try:
         tuners = Dict['tuners']
-        for tuneridx, tuner in enumerate(tuner):
+        for tuneridx, tuner in enumerate(tuners):
             if not tuner['autoDiscover']:
                 if isXmlTvModeHDHomeRun():
                     logInfo('HDHOmeRun Search')
@@ -329,20 +347,7 @@ def QueryChannelsFile(oc,tuneridx,query):
 
  
 
-###################################################################################################
-# Utility function to populate the channels, including the program info if enabled in preferences
-###################################################################################################
 
-def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
-    if search:
-        strSearch=1
-    else:
-        strSearch=0
-    # setup the VideoClipObjects from the channel list
-    for channel in channels:
-        program = channel.program
-        oc.add(CreateVO(tuneridx=tuneridx, url=channel.streamUrl,title=GetVcoTitle(channel), year=GetVcoYear(program), tagline=GetVcoTagline(program), summary=GetVcoSummary(program), starRating=GetVcoStarRating(program), thumb=GetVcoIcon(channel,program), videoCodec=channel.videoCodec, audioCodec=channel.audioCodec,search=strSearch))
-    return oc
 
 ###################################################################################################
 # Return error message
@@ -479,9 +484,8 @@ def ProgramMap_HDHomeRun(jsonChannelPrograms,query=None):
     return allProgramsMap
 
 def ProgramMap_File(channellist):
-
-    t = time.time()    
     allProgramsMap = {}
+    t = time.time()    
 
     channels = []
     channelIDs = []
@@ -492,7 +496,7 @@ def ProgramMap_File(channellist):
     p_channelID = None
     program=None
     i=0
-    
+
     for event, elem in etree.iterparse(Prefs[PREFS_XMLTV_FILE],events=("start", "end")):
         # get channelIDs that are requested.
         if elem.tag == 'channel' and event=='start':
@@ -526,13 +530,12 @@ def ProgramMap_File(channellist):
                     icon=xstr(icon_e.attrib.get('src'))
                 starRating=0.0
                 
-                if i==0:    
+                if i==0:
                     # current listing
                     program = Program(startTime,stopTime,title,date,subTitle,desc,icon,starRating)
                 else:
                     #next listing
                     program.next.append(Program(startTime,stopTime,title,date,subTitle,desc,icon,starRating))
-                    
                 i+=1
                 elem.clear()
             elif c_channelID!=p_channelID:
@@ -837,67 +840,88 @@ def LoadAllChannels(tuneridx):
 
     return ChannelCollection(allChannelsList,allChannelsMap)
 
-
-
 ###################################################################################################
-# This function is taken straight (well, almost) from the HDHRViewer V1 codebase
+# Utility function to populate the channels, including the program info if enabled in preferences
 ###################################################################################################
-@route(PREFIX + '/CreateVO')
-def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(ICON_DEFAULT_CHANNEL), starRating=0, include_container=False, checkFiles=0, videoCodec='mpeg2video',audioCodec='AC3',search=0):
 
-    #tempfix for iOS Plex 4.4
-    if iOSPlex44(): 
-        title = title.replace(' ',' ')
-        if tagline is not None:
-            tagline = tagline.replace(' ',' ')
-        if summary is not None:
-            summary = summary.replace(' ',' ')
+def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
 
     tuneridx_int=int(tuneridx)
     tuner = Dict['tuners'][tuneridx_int]
 
     jsonData = getDeviceInfoJsonData(tuner)
     modelNumber = jsonData.get('ModelNumber','unknown')
-    localIP = tuner['LocalIP']
+    #localIP = tuner['LocalIP']
+    localIP = tuner.get('LocalIP','')
     deviceID = jsonData.get('DeviceID','unknown')
-
-    uniquekey = url+deviceID+localIP
-
-    search=int(search)
-    # Only append device ip for search results
-    if search==1 and localIP!='':
-        title = title+' ['+localIP+']'
 
     # Allow trancoding only on HDTC-2US
     if modelNumber=='HDTC-2US':
         logInfo('HDTC-2US detected. Transcode='+Prefs['transcode'])
         transcode = Prefs['transcode']
     else:
-        logInfo('HDTC-2US not detected. No transcode option.')
-        transcode = "default"
+        logInfo(modelNumber + ' detected. Transcode=default/ignore')
+        transcode = 'default'
 
-    # For older firmwares/products.
-    if videoCodec=='':
-        videoCodec=VIDEO_CODEC
-    elif videoCodec=='MPEG2':
-        videoCodec=VIDEO_CODEC
-    
-    # For older firmwares/products.
-    if audioCodec=='':
-        audioCodec='ac3'
-    else:
-        audioCodec.lower()
+    # setup the VideoClipObjects from the channel list
+    for channel in channels:
+        program = channel.program
+        videoCodec = channel.videoCodec
+        audioCodec = channel.audioCodec
+        url = channel.streamUrl
+        vcoTitle = GetVcoTitle(channel)
+        year = GetVcoYear(program)
+        tagline = GetVcoTagline(program)
+        summary = GetVcoSummary(program)
+        starRating = GetVcoStarRating(program)
+        thumb = GetVcoIcon(channel,program)
 
-    #debugging purposes
-    logDebug('tuner_model='+modelNumber+';video_codec='+videoCodec+';audio_codec='+audioCodec+';url='+url)
+        # Only append device ip for search results
+        if search and localIP!='':
+            vcoTitle = vcoTitle+' ['+localIP+']'
+
+        # For older firmwares/products.
+        if videoCodec in ['','MPEG2',None]:
+            videoCodec=VIDEO_CODEC
+        logDebug(videoCodec)
+
+        #HDTC-2US and transcoding enabled:
+        if modelNumber=='HDTC-2US' and transcode not in ['default','none']:
+            videoCodec=VideoCodec.H264 
+        
+        # For older firmwares/products.
+        if audioCodec=='':
+            audioCodec='ac3'
+        else:
+            audioCodec=audioCodec.lower()
+
+        #tempfix for iOS Plex 4.4
+        if iOSPlex44(): 
+            title = title.replace(' ',' ')
+            if tagline is not None:
+                tagline = tagline.replace(' ',' ')
+            if summary is not None:
+                summary = summary.replace(' ',' ')
+
+        #debugging purposes
+        logDebug('channel='+channel.number+';video_codec='+videoCodec+';audio_codec='+audioCodec+';url='+url)
+
+        oc.add(CreateVO(tuneridx=tuneridx, url=url,title=vcoTitle, year=year, tagline=tagline, summary=summary, starRating=starRating, thumb=thumb, videoCodec=videoCodec, audioCodec=audioCodec,transcode=transcode))
+    return oc
+
+###################################################################################################
+# This function is taken straight (well, almost) from the HDHRViewer V1 codebase
+###################################################################################################
+@route(PREFIX + '/CreateVO')
+def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(ICON_DEFAULT_CHANNEL), starRating=0, include_container=False, checkFiles=0, videoCodec='mpeg2video',audioCodec='ac3',transcode='default'):
+
+    uniquekey = str(tuneridx)+url
 
     if transcode=='auto':
-        videoCodec = VideoCodec.H264
-        audioCodec = 'ac3'
         #AUTO TRANSCODE
         vo = VideoClipObject(
             rating_key = uniquekey,
-            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec,audioCodec=audioCodec,search=search),
+            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec,audioCodec=audioCodec,transcode=transcode),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),
@@ -954,7 +978,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
     elif transcode=='default':
         vo = VideoClipObject(
             rating_key = uniquekey,
-            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, search=search),
+            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, transcode=transcode),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),
@@ -978,12 +1002,9 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
             ]   
         )
     else:
-        if transcode!='none':
-            videoCodec = VideoCodec.H264
-	    audioCodec = 'ac3'
         vo = VideoClipObject(
             rating_key = uniquekey,
-            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, search=search),
+            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, transcode=transcode),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),
@@ -1084,6 +1105,12 @@ def logType(strmsg):
 ###################################################################################################   
 def iOSPlex44():
     return (Client.Product=='Plex for iOS' and Client.Version == '4.4')
+
+###################################################################################################
+# Error Msg
+###################################################################################################   
+def errorMessage(message):
+	return ObjectContainer(header="Error", message=message)
 		
 ###################################################################################################
 # Client Information.
@@ -1316,4 +1343,5 @@ class Favorite:
                     self.channels.sort(key=float)
                 except Exception as inst:
                     logError('Favorite.channels.sort'+strError(inst))
+
 
