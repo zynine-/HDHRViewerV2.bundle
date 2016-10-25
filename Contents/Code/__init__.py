@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.8
+# HDHR Viewer V2 v0.9.10
 
 import time
 import string
@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (0.9.9)'
+TITLE                = 'HDHR Viewer 2 (0.9.10)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.9'
+VERSION              = '0.9.10'
 
 
 #GRAPHICS
@@ -57,7 +57,7 @@ TIMEOUT = 5                 # XML Timeout (s); Default = 5
 TIMEOUT_LAN = 1             # LAN Timeout (s); Default = 1
 CACHETIME = 5               # Cache Time (s); Default = 5
 MAX_FAVORITES = 10          # Max number of favorites supported; Default = 10
-VIDEO_DURATION = 36000000   # Duration for Transcoder (ms); Default = 36000000 (10 hours)
+VIDEO_DURATION = 14400000   # Duration for Transcoder (ms); Default = 14400000 (4 hours)
 MAX_SIZE = 90971520         # [Bytes] 20971520 = 20MB; Default: 90971520 (100MB)
 
 AUDIO_CHANNELS = 6          # Audio Channels = 2 - stereo; 6 - 5.1
