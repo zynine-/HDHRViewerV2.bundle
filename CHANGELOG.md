@@ -1,3 +1,6 @@
+##0.9.11 (2016-10-27)
+- Fix HDHomeRun guide not following "XMLTV Next Program Count" settings. 
+
 ##0.9.10 (2016-10-24)
 - Changed Max Duration to 4hr, some Android device doesn't seem like like 10hr. 
 

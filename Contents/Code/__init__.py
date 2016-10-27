@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.10
+# HDHR Viewer V2 v0.9.11
 
 import time
 import string
@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (0.9.10)'
+TITLE                = 'HDHR Viewer 2 (0.9.11)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.10'
+VERSION              = '0.9.11'
 
 
 #GRAPHICS
@@ -455,6 +455,7 @@ def ProgramMap_HDHomeRun(jsonChannelPrograms,query=None):
     for jsonChannelProgram in jsonChannelPrograms:
         program=None
         guideNumber = jsonChannelProgram['GuideNumber']
+        nextCount=0
         for i, guide in enumerate(jsonChannelProgram.get('Guide','')):
             guideData = ParseProgramJson(XMLTV_MODE_HDHOMERUN,guide)
             guideTitle = guideData.title  # For Search Func.
@@ -468,8 +469,9 @@ def ProgramMap_HDHomeRun(jsonChannelPrograms,query=None):
                     program = guideData
 
             # Next Programs
-            if (guideData.startTime > t) and (program is not None) and (query is not None):
+            if (guideData.startTime > t) and (program is not None) and (query is None) and (nextCount<int(Prefs["xmltv_show_next_programs_count"])) :
                 program.next.append(guideData)
+                nextCount+=1
 
         #If Programs exist
         if program!=None:
