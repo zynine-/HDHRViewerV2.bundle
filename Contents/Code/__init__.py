@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (0.9.11)'
+TITLE                = 'HDHR Viewer 2 (0.9.12)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.11'
+VERSION              = '0.9.12'
 
 
 #GRAPHICS
@@ -80,6 +80,8 @@ def Start():
 ###################################################################################################
 @handler(PREFIX, TITLE, art=ART, thumb=ICON)
 def MainMenu():
+
+    getInfo()
 
     tuners=[]
 
@@ -994,7 +996,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
                     parts = [PartObject(key=(url))],
                     container = MEDIA_CONTAINER,
                     video_resolution = 1080,
-                    bitrate = 20000,
+                    #bitrate = 20000,
                     video_codec = videoCodec,
                     audio_codec = audioCodec,
                     audio_channels = AUDIO_CHANNELS,
@@ -1102,7 +1104,7 @@ def logType(strmsg):
     Log.Debug('---------- ' + xstr(strmsg) + '; Type='+xstr(type(strmsg)))
 
 ###################################################################################################
-# Plex 4.4 for iOS detection
+# Client detection
 ###################################################################################################   
 def iOSPlex44():
     return (Client.Product=='Plex for iOS' and Client.Version == '4.4')

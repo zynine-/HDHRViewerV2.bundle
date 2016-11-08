@@ -1,3 +1,6 @@
+##0.9.12 (2016-11-07)
+- Potential fix for HDHomeRun Prime + Roku 7.5.
+
 ##0.9.11 (2016-10-27)
 - Fix HDHomeRun guide not following "XMLTV Next Program Count" settings. 
 
