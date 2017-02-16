@@ -1,3 +1,6 @@
+##0.9.13 (2017-02-15)
+- PMS 1.4.1.3362 Fix.
+
 ##0.9.12 (2016-11-07)
 - Potential fix for HDHomeRun Prime + Roku 7.5.
 
