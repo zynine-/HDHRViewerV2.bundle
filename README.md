@@ -35,9 +35,9 @@ Example of manual discover + multiple tuner + automatic discovery. Set **HDHomeR
 Supports only 1 tuner, and tuner IP address have to be manually specified in settings. Set **HDHomeRun IP:**
 > 192.168.1.111
 
-## 3. Generate required codec (PMS 0.9.17.x and above.)
+## 3. Generate required codec (PMS 0.9.17.x to 1.3.x.)
 
-Since Plex Media Server 0.9.17.x and above, there was a change in the Plex transcoder which caused playback issue on most clients for first time users. To fix this problem, download a short clip from your HDHomeRun device, and add it to your PMS library, and play it. Now try using the **HDHR Viewer 2** again.
+Since Plex Media Server 0.9.17.x to 1.3.x, there was a change in the Plex transcoder which caused playback issue on most clients for first time users. To fix this problem, download a short clip from your HDHomeRun device, and add it to your PMS library, and play it. Now try using the **HDHR Viewer 2** again.
 
 ### 1. Download a short clip from your HDHomeRun tuner.
 Download a short clip from your HDHomeRun device using your web browser:
@@ -68,10 +68,10 @@ Certain android devices will have issue with playback. This is due to **Plex Med
 ### For other issues
 Go to <https://github.com/zynine-/HDHRViewerV2.bundle/issues?q=is%3Aissue+is%3Aopen+label%3A%22common+issues%22>
 
-
 ## HDHomeRun Compatibility
 
 Compatible with HDHomeRun that have DLNA or HTTP streaming capabilities.
+Recommended minimum firmware: 20161107
 
 ### Compatible
 - HDHomeRun PRIME (HDHR3-CC)
