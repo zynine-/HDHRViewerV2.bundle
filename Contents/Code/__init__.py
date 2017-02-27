@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # HDHR Viewer V2 v0.9.14
+=======
+# HDHR Viewer V2 v0.9.13
+>>>>>>> origin/master
 
 import time
 import string
@@ -8,9 +12,15 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
+<<<<<<< HEAD
 TITLE                = 'HDHR Viewer 2 (0.9.14)'
 PREFIX               = '/video/hdhrv2'
 VERSION              = '0.9.14'
+=======
+TITLE                = 'HDHR Viewer 2 (0.9.13)'
+PREFIX               = '/video/hdhrv2'
+VERSION              = '0.9.13'
+>>>>>>> origin/master
 
 
 #GRAPHICS
