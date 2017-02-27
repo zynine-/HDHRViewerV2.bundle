@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.11
+# HDHR Viewer V2 v0.9.14
 
 import time
 import string
@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (0.9.12)'
+TITLE                = 'HDHR Viewer 2 (0.9.14)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.12'
+VERSION              = '0.9.14'
 
 
 #GRAPHICS
@@ -890,7 +890,9 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
 
         #HDTC-2US and transcoding enabled:
         if modelNumber=='HDTC-2US' and transcode not in ['default','none']:
-            videoCodec=VideoCodec.H264 
+            videoCodec=VideoCodec.H264
+        else:
+            videoCodec=videoCodec.lower()
         
         # For older firmwares/products.
         if audioCodec=='':
@@ -916,7 +918,7 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
 # This function is taken straight (well, almost) from the HDHRViewer V1 codebase
 ###################################################################################################
 @route(PREFIX + '/CreateVO')
-def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(ICON_DEFAULT_CHANNEL), starRating=0, include_container=False, checkFiles=0, videoCodec='mpeg2video',audioCodec='ac3',transcode='default'):
+def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(ICON_DEFAULT_CHANNEL), starRating=0, include_container=False, checkFiles=0, videoCodec='mpeg2video',audioCodec='ac3',transcode='default',includeBandwidths=1):
 
     uniquekey = str(tuneridx)+url
 
@@ -924,7 +926,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
         #AUTO TRANSCODE
         vo = VideoClipObject(
             rating_key = uniquekey,
-            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec,audioCodec=audioCodec,transcode=transcode),
+            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec,audioCodec=audioCodec,transcode=transcode,includeBandwidths=includeBandwidths),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),
@@ -981,7 +983,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
     elif transcode=='default':
         vo = VideoClipObject(
             rating_key = uniquekey,
-            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, transcode=transcode),
+            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, transcode=transcode,includeBandwidths=includeBandwidths),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),
@@ -1007,7 +1009,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
     else:
         vo = VideoClipObject(
             rating_key = uniquekey,
-            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, transcode=transcode),
+            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, transcode=transcode,includeBandwidths=includeBandwidths),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),

@@ -8,8 +8,10 @@ This is the best method. **HDHR Viewer 2** can be updated easily through the **U
 **UAS V2** is available at <https://forums.plex.tv/discussion/202282/unsupported-appstore-v2-as-in-totally-unsupported/p1>
 
 ### Method 2 : Manual Installation
-Copy **HDHRViewerV2.bundle** to Plex Plug-in Directory. 
-[How do I find the Plug-Ins folder?](https://support.plex.tv/hc/en-us/articles/201106098-How-do-I-find-the-Plug-Ins-folder-)
+	a. git clone the the github **HDHRViewerV2.bundle** package to your local system
+	b. Copy the **HDHRViewerV2.bundle** files to Plex Plug-in Directory. 
+	[How do I find the Plug-Ins folder?](https://support.plex.tv/hc/en-us/articles/201106098-How-do-I-find-the-Plug-Ins-folder-)
+  		note that this info is not 100% foolproof
 
 ### Method 3 : Scripts
 Run install scripts included. (Limited OS)
@@ -17,6 +19,8 @@ Run install scripts included. (Limited OS)
 ## 2. Initial Plug-in Settings/Preferences
 
 Most Plex clients can't access the Plug-in Settings/Preferences. Use Plex/Web to configure it.
+	Open your browser to the Plex Web Admin page, select Channels, and you should see the HDHR Viewer Icon in the list.
+	If not, then go back to step 1 and correct the location where you copied the plgin package files
 
 ### 0.9.x and above:
 Multiple tuners are supported, and tuners are automatically discovered. Tuners can be manually define in **HDHomeRun IP**. You can manually list multiple tuners, with space delimited. See examples below.
