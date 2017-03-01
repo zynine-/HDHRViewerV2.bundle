@@ -10,3 +10,5 @@ Credits
   Deinterlace
 - [chateaukok@plex](https://forums.plex.tv/profile/chateaukok) (P. Kok) 
   audiocodec & videocodec detection
+- [SpacemanJT@plex](https://forums.plex.tv/profile/SpacemanJT)
+  sample files and info for UK tuner support.

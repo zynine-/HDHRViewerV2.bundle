@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.14
+# HDHR Viewer V2 v0.9.15
 
 import time
 import string
@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (0.9.14)'
+TITLE                = 'HDHR Viewer 2 (0.9.15)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.14'
+VERSION              = '0.9.15'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -61,7 +61,8 @@ MAX_SIZE = 90971520         # [Bytes] 20971520 = 20MB; Default: 90971520 (100MB)
 
 AUDIO_CHANNELS = 6          # Audio Channels = 2 - stereo; 6 - 5.1
 MEDIA_CONTAINER = 'mpegts'  # Default media container = 'mpegts'
-VIDEO_CODEC = 'mpeg2video'  # Default codec = 'mpeg2video'
+VIDEO_CODEC = 'mpeg2video'  # Default video codec = 'mpeg2video'
+AUDIO_CODEC = 'ac3'         # Default audio codec = 'ac3'
 
 ###################################################################################################
 # Entry point - set up default values for all containers
@@ -854,17 +855,28 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
 
     jsonData = getDeviceInfoJsonData(tuner)
     modelNumber = jsonData.get('ModelNumber','unknown')
+    firmwareName = jsonData.get('FirmwareName','unknown')
+    firmwareVersion = jsonData.get('FirmwareVersion','unknown')
     #localIP = tuner['LocalIP']
     localIP = tuner.get('LocalIP','')
     deviceID = jsonData.get('DeviceID','unknown')
 
-    # Allow trancoding only on HDTC-2US
-    if modelNumber=='HDTC-2US':
-        logInfo('HDTC-2US detected. Transcode='+Prefs['transcode'])
+    #Debugging info
+    logInfo('********************[Tuner]***********************')
+    logInfo('Model    :'+modelNumber)
+    logInfo('Firmware :'+firmwareName+' '+firmwareVersion)
+
+    #Overwrite PreTranscode setting according to model.
+    if modelNumber=='HDTC-2US' and Prefs['transcode'] in ['none','default']:
+        logInfo('Transcode:'+Prefs['transcode']+'; Overwrite to none')
+        transcode = 'none'
+    elif modelNumber=='HDTC-2US':
+        logInfo('Transcode:'+Prefs['transcode'])
         transcode = Prefs['transcode']
     else:
-        logInfo(modelNumber + ' detected. Transcode=default/ignore')
+        logInfo('Transcode:default/ignore')
         transcode = 'default'
+    logInfo('**************************************************')
 
     # setup the VideoClipObjects from the channel list
     for channel in channels:
@@ -883,19 +895,27 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
         if search and localIP!='':
             vcoTitle = vcoTitle+' ['+localIP+']'
 
-        # For older firmwares/products.
-        if videoCodec in ['','MPEG2',None]:
+        #If codec not defined/available (older firmware), assume default codec.
+        if videoCodec in ['',None]:
             videoCodec=VIDEO_CODEC
+            logError('Video Codec not defined. Are you running the latest firmware? Trying videoCodec='+AUDIO_CODEC)
+        if audioCodec in ['',None]:
+            logError('Audio Codec not defined. Are you running the latest firmware? Trying audioCodec='+AUDIO_CODEC)
+            audioCodec=AUDIO_CODEC
 
-        #HDTC-2US and transcoding enabled:
+        #VideoCodec correction
         if modelNumber=='HDTC-2US' and transcode not in ['default','none']:
             videoCodec=VideoCodec.H264
+        elif videoCodec.lower()=='mpeg2':
+            videoCodec='mpeg2video'
         else:
             videoCodec=videoCodec.lower()
-        
-        # For older firmwares/products.
-        if audioCodec=='':
-            audioCodec='ac3'
+
+        #AudioCodec correction
+        if audioCodec.lower()=='aac':
+            audioCodec=='aac_latm'
+        elif audioCodec.lower()=='mpeg':
+            audioCodec=='mp2'
         else:
             audioCodec=audioCodec.lower()
 
@@ -979,7 +999,11 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
                 ),
             ]
         )
-    elif transcode=='default':
+    elif transcode in ['default','none']:
+        if transcode=='none':
+            mo_url=url+'?transcode=none'
+        else:
+            mo_url=url
         vo = VideoClipObject(
             rating_key = uniquekey,
             key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, transcode=transcode,includeBandwidths=includeBandwidths),
@@ -994,7 +1018,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
             thumb = thumb,
             items = [   
                 MediaObject(
-                    parts = [PartObject(key=(url))],
+                    parts = [PartObject(key=(mo_url))],
                     container = MEDIA_CONTAINER,
                     video_resolution = 1080,
                     #bitrate = 20000,
@@ -1021,8 +1045,9 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
             thumb = thumb,
             items = [   
                 MediaObject(
-                    parts = [PartObject(key=(url+"?transcode="+Prefs["transcode"]))],
+                    parts = [PartObject(key=(url+'?=transcode'+transcode))],
                     container = MEDIA_CONTAINER,
+                    video_resolution = 1080,
                     video_codec = videoCodec,
                     audio_codec = audioCodec,
                     audio_channels = AUDIO_CHANNELS,
@@ -1061,7 +1086,7 @@ def xint(s):
 ###################################################################################################
 # Make safe file name for channel logo
 ###################################################################################################
-def makeSafeFilename(inputFilename):     
+def makeSafeFilename(inputFilename):
     try:
         safechars = string.letters + string.digits + "-_."
         return filter(lambda c: c in safechars, inputFilename)
@@ -1120,12 +1145,19 @@ def errorMessage(message):
 # Client Information.
 ###################################################################################################				
 def getInfo():
-    svrOSver = Platform.OSVersion
+    #svrOSver = Platform.OSVersion
     logInfo('******************[System Info]*******************')
-    logInfo('Server: '+Platform.OS+' '+svrOSver+' ['+Platform.CPU+']')
+    logInfo('Server: '+Platform.OS+' '+Platform.OSVersion+' ['+Platform.CPU+']')
     logInfo('PMS   : '+Platform.ServerVersion)
     logInfo('Client: '+Client.Product+' '+Client.Version+' ['+Client.Platform+']')
     logInfo("HDHRV2: "+VERSION)
+    logInfo('*******************[Settings]*********************')
+    logInfo('HDHomerunIP:'+Prefs['hdhomerun_ip'])
+    logInfo('Transcode  :'+Prefs['transcode'])
+    logInfo('XMLTV Mode :'+Prefs['xmltv_mode'])
+    logInfo('XMLTV File :'+Prefs['xmltv_file'])
+    logInfo('XMLTV URL  :'+Prefs['xmltv_api_url'])
+    logInfo('XMLTV Match:'+Prefs['xmltv_match'])
     logInfo('**************************************************')
 
 ###################################################################################################

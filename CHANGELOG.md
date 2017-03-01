@@ -1,3 +1,7 @@
+##0.9.15 (2017-02-28)
+- audio codec compatibility with UK tuners.
+- overwrite transcode setting for HDTC-2US.
+
 ##0.9.14 (2017-02-26)
 - PMS 1.4.x video codec fix.
 
