@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.15
+# HDHR Viewer V2 v0.9.16
 
 import time
 import string
@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (0.9.15)'
+TITLE                = 'HDHR Viewer 2 (0.9.16)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.15'
+VERSION              = '0.9.16'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -942,7 +942,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
     uniquekey = str(tuneridx)+url
 
     if transcode=='auto':
-        #AUTO TRANSCODE
+        #Auto Transcode for HDTC-2US
         vo = VideoClipObject(
             rating_key = uniquekey,
             key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec,audioCodec=audioCodec,transcode=transcode,includeBandwidths=includeBandwidths),
@@ -1000,6 +1000,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
             ]
         )
     elif transcode in ['default','none']:
+        #For HDTC-2US(transcode=none) or other tuners.
         if transcode=='none':
             mo_url=url+'?transcode=none'
         else:
@@ -1030,6 +1031,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
             ]   
         )
     else:
+        #For HDTC-2US H264
         vo = VideoClipObject(
             rating_key = uniquekey,
             key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, transcode=transcode,includeBandwidths=includeBandwidths),
@@ -1045,9 +1047,9 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
             thumb = thumb,
             items = [   
                 MediaObject(
-                    parts = [PartObject(key=(url+'?=transcode'+transcode))],
+                    parts = [PartObject(key=(url+'?transcode='+transcode))],
                     container = MEDIA_CONTAINER,
-                    video_resolution = 1080,
+                    #video_resolution = 1080,
                     video_codec = videoCodec,
                     audio_codec = audioCodec,
                     audio_channels = AUDIO_CHANNELS,
