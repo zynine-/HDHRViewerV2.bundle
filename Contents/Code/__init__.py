@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.16
+# HDHR Viewer V2 v0.9.17
 
 import time
 import string
@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (0.9.16)'
+TITLE                = 'HDHR Viewer 2 (0.9.17)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.16'
+VERSION              = '0.9.17'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
