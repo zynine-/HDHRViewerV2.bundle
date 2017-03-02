@@ -913,9 +913,9 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
 
         #AudioCodec correction
         if audioCodec.lower()=='aac':
-            audioCodec=='aac_latm'
+            audioCodec='aac_latm'
         elif audioCodec.lower()=='mpeg':
-            audioCodec=='mp2'
+            audioCodec='mp2'
         else:
             audioCodec=audioCodec.lower()
 

@@ -1,8 +1,11 @@
+##0.9.17 (2017-03-01)
+- audio codec compatibility for UK tuners.
+
 ##0.9.16 (2017-03-01)
 - HDTC-2US transcode fix.
 
 ##0.9.15 (2017-02-28)
-- audio codec compatibility with UK tuners.
+- audio codec compatibility with UK tuners. [failed, fixed with 0.9.17]
 - overwrite transcode setting for HDTC-2US.
 
 ##0.9.14 (2017-02-26)
