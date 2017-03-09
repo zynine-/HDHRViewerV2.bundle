@@ -131,22 +131,22 @@ There are many different combinations (Hardware, Software, Firmware, Server, Cli
 
 Whenever help is needed, please ALWAYS provide:
 
-Plex Media Server Log Files (Make sure General->Enable Plex Media Server debug logging is checked.)
-HDHRViewerV2 Log Files
-Server Operating System :
-Server CPU :
-HDHomeRun Model/Firmware :
-Is this a new installation or upgrade? What was upgraded?
-Issues with Streaming, Channel Guide or other?
-Is there any error message?
-Have you successfully run on another other Clients? If yes, please list them.
+- Plex Media Server Log Files (Make sure General->Enable Plex Media Server debug logging is checked.)
+- HDHRViewerV2 Log Files
+- Server Operating System :
+- Server CPU :
+- HDHomeRun Model/Firmware :
+- Is this a new installation or upgrade? What was upgraded?
+- Issues with Streaming, Channel Guide or other?
+- Is there any error message?
+- Have you successfully run on another other Clients? If yes, please list them.
+
 If streaming issue:
+- Are you trying to stream locally on your network, or remotely?
+- What are you Player Online Streaming Quality?
+- Have you tried other Streaming Quality like Original or 4 Mbps 720p?
 
-Are you trying to stream locally on your network, or remotely?
-What are you Player Online Streaming Quality?
-Have you tried other Streaming Quality like Original or 4 Mbps 720p?
 Optional for streaming:
-
 A 5 second video clip of affected channel.
 https://forums.plex.tv/discussion/101755/hdhomerun-viewer
 
