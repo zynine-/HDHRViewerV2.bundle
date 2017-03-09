@@ -37,7 +37,7 @@ Supports only 1 tuner, and tuner IP address have to be manually specified in set
 
 ## 3. Generate required codec (PMS 0.9.17.x to 1.3.x.)
 
-Since Plex Media Server 0.9.17.x to 1.3.x, there was a change in the Plex transcoder which caused playback issue on most clients for first time users. To fix this problem, download a short clip from your HDHomeRun device, and add it to your PMS library, and play it. Now try using the **HDHR Viewer 2** again.
+With Plex Media Server 0.9.17.x to 1.3.x, there was a change in the Plex transcoder which caused playback issue on most clients for first time users. To fix this problem, download a short clip from your HDHomeRun device, and add it to your PMS library, and play it. Now try using the **HDHR Viewer 2** again.
 
 ### 1. Download a short clip from your HDHomeRun tuner.
 Download a short clip from your HDHomeRun device using your web browser:
@@ -92,7 +92,7 @@ Please use [HDSurfer Plug-in for HDHomeRun](https://forums.plex.tv/discussion/83
 
 Standard Plex requirement for streaming to Plex Home Theater (PHT)
 
-High CPU requirement for transcoding to other clients (Web/Android/Roku/FireTV/etc…). Typical NAS devices may not have capable CPU for transcoding.
+High CPU requirement for transcoding to other clients (Web/Android/Roku/FireTV/etc…). Typical NAS devices may not have capable CPU for transcoding. Not compatible with Nvidia Shields (unless rooted, due to elevated privilages required for File-based XMLTV. I may spin-off another version just for Nvidia Shields if requested)
 
 Estimated CPU requirement for 1080i MPEGTS transcoding:
 - Intel Core2 Quad 2.5Ghz or faster.
@@ -104,13 +104,11 @@ Estimated CPU requirement for 1080i MPEGTS transcoding:
 
 ## Client Compatibility
 
-Some browser may have playback issues with HTML5 player, disable HTML5 player. Refer to Known Anomalies for more info.
-
-Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/wiki/Compatibility-Report>
+No client restriction known. Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/wiki/Compatibility-Report>
 
 ## Android Playback Issue & Resolution
 
-Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/issues/3>
+Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/issues/3> * Not applicable to all PMS Versions.
 
 ## Common Issues and Resolution
 
@@ -122,3 +120,34 @@ Refer to: <https://github.com/zynine-/HDHRViewerV2.bundle/issues/3>
 ## Refer to the Wiki for more setups
 
 <https://github.com/zynine-/HDHRViewerV2.bundle/wiki>
+
+## Playback issues/troubleshooting.
+- Update to the latest firmware
+- Do a channel scan on the HDHomeRun, some channels may have changed from mpeg2 to h264, and can cause playback issues
+
+Before you post in the plex forum, please read the following:
+
+There are many different combinations (Hardware, Software, Firmware, Server, Client) possible, I do not have the resources to test every single combination or scenario.
+
+Whenever help is needed, please ALWAYS provide:
+
+Plex Media Server Log Files (Make sure General->Enable Plex Media Server debug logging is checked.)
+HDHRViewerV2 Log Files
+Server Operating System :
+Server CPU :
+HDHomeRun Model/Firmware :
+Is this a new installation or upgrade? What was upgraded?
+Issues with Streaming, Channel Guide or other?
+Is there any error message?
+Have you successfully run on another other Clients? If yes, please list them.
+If streaming issue:
+
+Are you trying to stream locally on your network, or remotely?
+What are you Player Online Streaming Quality?
+Have you tried other Streaming Quality like Original or 4 Mbps 720p?
+Optional for streaming:
+
+A 5 second video clip of affected channel.
+https://forums.plex.tv/discussion/101755/hdhomerun-viewer
+
+Feel free to ask questions at: https://forums.plex.tv/discussion/101755/hdhomerun-viewer
