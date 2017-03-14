@@ -1,3 +1,6 @@
+##0.9.18 (2017-03-13)
+- XMLTV-File Last Channel data missing. Fixed by daeks
+
 ##0.9.17 (2017-03-01)
 - audio codec compatibility for UK tuners.
 
