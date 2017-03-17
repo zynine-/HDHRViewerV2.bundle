@@ -1,4 +1,4 @@
-# HDHR Viewer V2 v0.9.18
+# HDHR Viewer V2
 
 import time
 import string
@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (0.9.18)'
+TITLE                = 'HDHR Viewer 2 (0.9.19)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.18'
+VERSION              = '0.9.19'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -25,10 +25,14 @@ ICON_UNKNOWN         = 'icon-unknown.png'
 #PREFS
 PREFS_HDHR_IP        = 'hdhomerun_ip'
 PREFS_HDHR_TUNER     = 'hdhomerun_tuner'
+PREFS_TRANSCODE      = 'transcode'
 PREFS_XMLTV_MODE     = 'xmltv_mode'
 PREFS_XMLTV_FILE     = 'xmltv_file'
 PREFS_LOGO_MATCH     = 'channellogo'
 PREFS_XMLTV_MATCH    = 'xmltv_match'
+PREFS_XMLTV_APIURL   = 'xmltv_api_url'
+PREFS_VCODEC         = 'videocodec'
+PREFS_ACODEC         = 'audiocodec'
 
 #XMLTV Modes
 XMLTV_MODE_RESTAPI   = 'restapi'
@@ -134,6 +138,10 @@ def MainMenu():
     # Settings / Preference Menu
     oc.add(PrefsObject(title='Settings', thumb=R(ICON_SETTINGS)))
 
+    # Dev/Debug purpose
+    oc.add(CreateVO(tuneridx=1, url="http://192.168.1.11/plextest/plex%20-%20sonny.chana/v101.mpe" ,title="TestTitle", year="2010", tagline="Tag", summary="summary", starRating=3.5, thumb=ICON_FAV_LIST, videoCodec=None, audioCodec=None,transcode="default"))
+    #oc.add(CreateVO(tuneridx=1, url="http://192.168.1.11/TestVideos/v5134.mpeg" ,title="TestTitle", year="2010", tagline="Tag", summary="summary", starRating=3.5, thumb=ICON_FAV_LIST, videoCodec=None, audioCodec=None,transcode="default"))
+
     return oc
     
 ###################################################################################################
@@ -227,7 +235,7 @@ def SearchResultsChannelsMenu(query):
         for tuneridx, tuner in enumerate(tuners):
             if not tuner['autoDiscover']:
                 if isXmlTvModeHDHomeRun():
-                    logInfo('HDHOmeRun Search')
+                    logInfo('HDHomeRun Search')
                     oc = QueryChannelsHDHomeRun(oc,tuneridx,query)
                 elif isXmlTvModeFile():
                     logInfo('XMLTV Search')
@@ -540,7 +548,7 @@ def ProgramMap_File(channellist):
                 else:
                     #next listing
                     program.next.append(Program(startTime,stopTime,title,date,subTitle,desc,icon,starRating))
-		if program!=None:
+                if program!=None:
                     allProgramsMap[channelmap] = program
                 i+=1
                 elem.clear()
@@ -831,10 +839,13 @@ def LoadAllChannels(tuneridx):
             videoCodec = channel.get('VideoCodec','')
             audioCodec = channel.get('AudioCodec','')
             streamUrl = channel.get('URL','')
+            HD = xstr(channel.get('HD',''))
+            Fav = xstr(channel.get('Favorite',''))
+            DRM = xstr(channel.get('DRM',''))
 
             channelLogo = ICON_DEFAULT_CHANNEL
 
-            channel = Channel(guideNumber,guideName,streamUrl,channelLogo,videoCodec,audioCodec)
+            channel = Channel(guideNumber,guideName,streamUrl,channelLogo,videoCodec,audioCodec,HD,Fav,DRM)
             allChannelsList.append(channel)
             allChannelsMap[guideNumber] = channel
 
@@ -876,13 +887,23 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
     else:
         logInfo('Transcode:default/ignore')
         transcode = 'default'
+    if Prefs[PREFS_VCODEC]!="default":
+        logInfo('VideoCodec Override:'+Prefs[PREFS_VCODEC])
+    if Prefs[PREFS_ACODEC]!="default":
+        logInfo('AudioCodec Override:'+Prefs[PREFS_ACODEC])
     logInfo('**************************************************')
+    logDebug('ch.no'.ljust(6)+'|'+'RptCodec'.ljust(12)+'|'+'CptCodec'.ljust(18)+'|'+'HD'.ljust(2)+'|'+'Fav'.ljust(3)+'|'+'DRM'.ljust(3)+'|'+'url')
 
     # setup the VideoClipObjects from the channel list
     for channel in channels:
         program = channel.program
         videoCodec = channel.videoCodec
         audioCodec = channel.audioCodec
+        RvideoCodec = channel.videoCodec
+        RaudioCodec = channel.audioCodec
+        HD = channel.HD
+        DRM = channel.DRM
+        Fav = channel.Fav
         url = channel.streamUrl
         vcoTitle = GetVcoTitle(channel)
         year = GetVcoYear(program)
@@ -896,28 +917,43 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
             vcoTitle = vcoTitle+' ['+localIP+']'
 
         #If codec not defined/available (older firmware), assume default codec.
-        if videoCodec in ['',None]:
+        if RvideoCodec in ['',None]:
+            logError('Video Codec not defined. Are you running the latest firmware? Trying videoCodec='+VIDEO_CODEC)
             videoCodec=VIDEO_CODEC
-            logError('Video Codec not defined. Are you running the latest firmware? Trying videoCodec='+AUDIO_CODEC)
-        if audioCodec in ['',None]:
+            RvideoCodec=VIDEO_CODEC
+        if RaudioCodec in ['',None]:
             logError('Audio Codec not defined. Are you running the latest firmware? Trying audioCodec='+AUDIO_CODEC)
             audioCodec=AUDIO_CODEC
+            RaudioCodec=AUDIO_CODEC
 
         #VideoCodec correction
         if modelNumber=='HDTC-2US' and transcode not in ['default','none']:
             videoCodec=VideoCodec.H264
-        elif videoCodec.lower()=='mpeg2':
+        elif RvideoCodec.lower()=='mpeg2':
             videoCodec='mpeg2video'
         else:
-            videoCodec=videoCodec.lower()
+            videoCodec=RvideoCodec.lower()
 
-        #AudioCodec correction
-        if audioCodec.lower()=='aac':
+       #AudioCodec correction
+        if RaudioCodec.lower()=='aac':
             audioCodec='aac_latm'
-        elif audioCodec.lower()=='mpeg':
+        elif RaudioCodec.lower()=='mpeg':
             audioCodec='mp2'
         else:
             audioCodec=audioCodec.lower()
+            audioCodec=RaudioCodec.lower()
+
+        #VideoCodec override
+        if Prefs[PREFS_VCODEC]=='plex':
+            videoCodec=None
+        elif Prefs[PREFS_VCODEC]!='default':
+            videoCodec=Prefs[PREFS_VCODEC]
+
+        #AudioCodec override
+        if Prefs[PREFS_ACODEC]=='plex':
+            audioCodec=None
+        elif Prefs[PREFS_ACODEC]!='default':
+            audioCodec=Prefs[PREFS_ACODEC]
 
         #tempfix for iOS Plex 4.4
         if iOSPlex44(): 
@@ -928,7 +964,7 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
                 summary = summary.replace(' ',' ')
 
         #debugging purposes
-        logDebug('channel='+channel.number+';video_codec='+videoCodec+';audio_codec='+audioCodec+';url='+url)
+        logDebug(channel.number.ljust(6)+'|'+(RvideoCodec+'/'+RaudioCodec).ljust(12)+'|'+(xstr(videoCodec)+'/'+xstr(audioCodec)).ljust(18)+'|'+HD.ljust(2)+'|'+Fav.ljust(3)+'|'+DRM.ljust(3)+'|'+url)
 
         oc.add(CreateVO(tuneridx=tuneridx, url=url,title=vcoTitle, year=year, tagline=tagline, summary=summary, starRating=starRating, thumb=thumb, videoCodec=videoCodec, audioCodec=audioCodec,transcode=transcode))
     return oc
@@ -937,7 +973,7 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
 # This function is taken straight (well, almost) from the HDHRViewer V1 codebase
 ###################################################################################################
 @route(PREFIX + '/CreateVO')
-def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(ICON_DEFAULT_CHANNEL), starRating=0, include_container=False, checkFiles=0, videoCodec='mpeg2video',audioCodec='ac3',transcode='default',includeBandwidths=1):
+def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(ICON_DEFAULT_CHANNEL), starRating=0, include_container=False, checkFiles=0, videoCodec=None,audioCodec=None,transcode='default',includeBandwidths=1):
 
     uniquekey = str(tuneridx)+url
 
@@ -1154,12 +1190,14 @@ def getInfo():
     logInfo('Client: '+Client.Product+' '+Client.Version+' ['+Client.Platform+']')
     logInfo("HDHRV2: "+VERSION)
     logInfo('*******************[Settings]*********************')
-    logInfo('HDHomerunIP:'+Prefs['hdhomerun_ip'])
-    logInfo('Transcode  :'+Prefs['transcode'])
-    logInfo('XMLTV Mode :'+Prefs['xmltv_mode'])
-    logInfo('XMLTV File :'+Prefs['xmltv_file'])
-    logInfo('XMLTV URL  :'+Prefs['xmltv_api_url'])
-    logInfo('XMLTV Match:'+Prefs['xmltv_match'])
+    logInfo('HDHomerunIP........:'+Prefs[PREFS_HDHR_IP])
+    logInfo('Transcode..........:'+Prefs[PREFS_TRANSCODE])
+    logInfo('XMLTV Mode.........:'+Prefs[PREFS_XMLTV_MODE])
+    logInfo('XMLTV File.........:'+Prefs[PREFS_XMLTV_FILE])
+    logInfo('XMLTV URL..........:'+Prefs[PREFS_XMLTV_APIURL])
+    logInfo('XMLTV Match........:'+Prefs[PREFS_XMLTV_MATCH])
+    logInfo('VideoCodec Override:'+Prefs[PREFS_VCODEC])
+    logInfo('AudioCodec Override:'+Prefs[PREFS_ACODEC])
     logInfo('**************************************************')
 
 ###################################################################################################
@@ -1325,7 +1363,7 @@ class ChannelCollection:
 # Channel class definition
 ###################################################################################################
 class Channel:
-    def __init__(self,guideNumber,guideName,streamUrl,channelLogo,videoCodec,audioCodec):
+    def __init__(self,guideNumber,guideName,streamUrl,channelLogo,videoCodec,audioCodec,HD,Fav,DRM):
         self.number = guideNumber
         self.name = guideName
         self.streamUrl = streamUrl
@@ -1333,6 +1371,9 @@ class Channel:
         self.logo = channelLogo
         self.videoCodec = videoCodec
         self.audioCodec = audioCodec
+        self.HD = HD
+        self.Fav = Fav
+        self.DRM = DRM
         
     def setProgramInfo(self,program):
         self.program = program

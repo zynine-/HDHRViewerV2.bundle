@@ -46,6 +46,20 @@
 		"default": "none"
 	},
 	{
+		"id": "videocodec",
+		"type": "enum",
+		"label": "VideoCodec Rule/Override",
+		"values": ["default","plex","h264","hevc","mpeg2video"],
+		"default": "default"
+	},
+	{
+		"id": "audiocodec",
+		"type": "enum",
+		"label": "AudioCodec Rule/Override",
+		"values": ["default","plex","aac","aac_latm","ac3","eac3","mp2","mp3"],
+		"default": "default"
+	},
+	{
 		"id": "favorites.1.enable",
 		"type": "bool",
 		"label": "Favorites 1 Enable",
