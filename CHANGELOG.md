@@ -1,3 +1,7 @@
+##0.9.19 (2017-03-17)
+- VideoCodec Rule/Override
+- AudioCodec Rule/Override
+
 ##0.9.18 (2017-03-13)
 - XMLTV-File Last Channel data missing. Fixed by daeks
 
