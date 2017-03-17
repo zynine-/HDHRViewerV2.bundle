@@ -139,7 +139,6 @@ def MainMenu():
     oc.add(PrefsObject(title='Settings', thumb=R(ICON_SETTINGS)))
 
     # Dev/Debug purpose
-    oc.add(CreateVO(tuneridx=1, url="http://192.168.1.11/plextest/plex%20-%20sonny.chana/v101.mpe" ,title="TestTitle", year="2010", tagline="Tag", summary="summary", starRating=3.5, thumb=ICON_FAV_LIST, videoCodec=None, audioCodec=None,transcode="default"))
     #oc.add(CreateVO(tuneridx=1, url="http://192.168.1.11/TestVideos/v5134.mpeg" ,title="TestTitle", year="2010", tagline="Tag", summary="summary", starRating=3.5, thumb=ICON_FAV_LIST, videoCodec=None, audioCodec=None,transcode="default"))
 
     return oc
