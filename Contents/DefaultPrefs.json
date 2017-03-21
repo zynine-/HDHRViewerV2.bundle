@@ -39,6 +39,12 @@
 		"default": "number"
 	},
 	{
+		"id": "icon_directory",
+		"type": "text",
+		"label": "Channel Icon Directory",
+		"default": "C:\\HDHRViewer\\icons\\"
+	},
+	{
 		"id": "transcode",
 		"type": "enum",
 		"label": "Pre-Transcode (HDTC-2US only)",
