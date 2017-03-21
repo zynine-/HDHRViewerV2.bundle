@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (0.9.19)'
+TITLE                = 'HDHR Viewer 2 (1.0.0)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '0.9.19'
+VERSION              = '1.0.0'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -33,6 +33,7 @@ PREFS_XMLTV_MATCH    = 'xmltv_match'
 PREFS_XMLTV_APIURL   = 'xmltv_api_url'
 PREFS_VCODEC         = 'videocodec'
 PREFS_ACODEC         = 'audiocodec'
+PREFS_ICONDIR        = 'icon_directory'
 
 #XMLTV Modes
 XMLTV_MODE_RESTAPI   = 'restapi'
@@ -78,6 +79,7 @@ def Start():
     DirectoryObject.thumb = R(ICON)
     DirectoryObject.art = R(ART)
     HTTP.CacheTime = CACHETIME
+
     
 ###################################################################################################
 # Main Menu
@@ -88,7 +90,6 @@ def MainMenu():
     getInfo()
 
     tuners=[]
-
     HDHRV2 = Devices()
     tuners = HDHRV2.tunerDevices
     totalTuners = len(tuners)  
@@ -137,6 +138,15 @@ def MainMenu():
 
     # Settings / Preference Menu
     oc.add(PrefsObject(title='Settings', thumb=R(ICON_SETTINGS)))
+
+    # Load Channel Icons
+    Resources_iconpath = Core.storage.join_path(Core.bundle_path,'Contents','Resources','Icons')
+    Local_iconpath = Prefs[PREFS_ICONDIR]
+    if dirExists(Local_iconpath):
+        #Only Show Reload Icons if directory properly configured.
+        oc.add(DirectoryObject(key=Callback(LoadChannelIcons), title='Reload Icons', art=R(ART), thumb=R(ICON_SETTINGS)))
+        if not dirExists(Resources_iconpath):
+            LoadChannelIcons()
 
     # Dev/Debug purpose
     #oc.add(CreateVO(tuneridx=1, url="http://192.168.1.11/TestVideos/v5134.mpeg" ,title="TestTitle", year="2010", tagline="Tag", summary="summary", starRating=3.5, thumb=ICON_FAV_LIST, videoCodec=None, audioCodec=None,transcode="default"))
@@ -254,6 +264,29 @@ def SearchResultsChannelsMenu(query):
     
     except Exception as inst:
         logError('SearchResultsChannelsMenu(\''+query+'\'): '+strError(inst))
+        return AddErrorObjectContainer(oc,strError(inst))
+    return oc
+
+@route(PREFIX + '/load-channel-icons')
+def LoadChannelIcons():
+
+    oc = ObjectContainer(title1='Load Channel Icons',no_cache=True)
+
+    try:
+        logDebug('LoadChannelIcons')
+        Resources_iconpath = Core.storage.join_path(Core.bundle_path,'Contents','Resources','Icons')
+        Local_iconpath = Prefs[PREFS_ICONDIR]
+        #Core.storage.copy_tree(Local_iconpath,Resources_iconpath)
+
+        for filename in Core.storage.list_dir(Local_iconpath):
+            src = Core.storage.join_path(Local_iconpath,filename)
+            dest = Core.storage.join_path(Resources_iconpath,filename)
+            if os.path.isfile(src):
+                Core.storage.copy(src,dest)
+
+        return AddErrorObjectContainer(oc,'Done!')
+    except Exception as inst:
+        logError('Reset: '+strError(inst))
         return AddErrorObjectContainer(oc,strError(inst))
     return oc
 
@@ -777,8 +810,9 @@ def GetVcoIcon(channel,program):
         icon = R(icon_channelnumber)
     elif resourceExists('logo-'+icon_channelnumber):
         icon = R('logo-'+icon_channelnumber)
-        
+    
     return icon
+
     
 ###################################################################################################
 # This function converts a time in milliseconds to a time text
@@ -965,14 +999,22 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
         #debugging purposes
         logDebug(channel.number.ljust(6)+'|'+(RvideoCodec+'/'+RaudioCodec).ljust(12)+'|'+(xstr(videoCodec)+'/'+xstr(audioCodec)).ljust(18)+'|'+HD.ljust(2)+'|'+Fav.ljust(3)+'|'+DRM.ljust(3)+'|'+url)
 
-        oc.add(CreateVO(tuneridx=tuneridx, url=url,title=vcoTitle, year=year, tagline=tagline, summary=summary, starRating=starRating, thumb=thumb, videoCodec=videoCodec, audioCodec=audioCodec,transcode=transcode))
+        oc.add(CreateVO(tuneridx=tuneridx, url=url, title=vcoTitle, year=year, tagline=tagline, summary=summary, starRating=starRating, thumb=thumb,
+                        number=channel.number, name=channel.name, thumb_url=thumb,
+                        videoCodec=videoCodec, audioCodec=audioCodec,transcode=transcode))
     return oc
 
 ###################################################################################################
-# This function is taken straight (well, almost) from the HDHRViewer V1 codebase
+# Create Video Object
 ###################################################################################################
 @route(PREFIX + '/CreateVO')
-def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(ICON_DEFAULT_CHANNEL), starRating=0, include_container=False, checkFiles=0, videoCodec=None,audioCodec=None,transcode='default',includeBandwidths=1):
+def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=None, starRating=0,  
+             videoCodec=None,audioCodec=None,transcode='default',
+             number='None',name='None',
+             include_container=False,
+             thumb_url=None,
+             #checkFiles=0, includeBandwidths=1,
+             **kwargs):
 
     uniquekey = str(tuneridx)+url
 
@@ -980,7 +1022,11 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
         #Auto Transcode for HDTC-2US
         vo = VideoClipObject(
             rating_key = uniquekey,
-            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec,audioCodec=audioCodec,transcode=transcode,includeBandwidths=includeBandwidths),
+            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, starRating=starRating, 
+                           videoCodec=videoCodec,audioCodec=audioCodec,transcode=transcode,
+                           thumb=thumb,
+                           #checkFiles=checkFiles, includeBandwidths=includeBandwidths,
+                           include_container=True),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),
@@ -1042,7 +1088,10 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
             mo_url=url
         vo = VideoClipObject(
             rating_key = uniquekey,
-            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, transcode=transcode,includeBandwidths=includeBandwidths),
+            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, 
+                           videoCodec=videoCodec,audioCodec=audioCodec,transcode=transcode,
+                           #checkFiles=checkFiles, includeBandwidths=includeBandwidths,
+                           include_container=True),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),
@@ -1069,7 +1118,10 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=R(IC
         #For HDTC-2US H264
         vo = VideoClipObject(
             rating_key = uniquekey,
-            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, include_container=True, checkFiles=checkFiles, videoCodec=videoCodec, audioCodec=audioCodec, transcode=transcode,includeBandwidths=includeBandwidths),
+            key = Callback(CreateVO, tuneridx=tuneridx, url=url, title=title, year=year, tagline=tagline, summary=summary, thumb=thumb, starRating=starRating, 
+                           videoCodec=videoCodec,audioCodec=audioCodec,transcode=transcode,
+                           #checkFiles=checkFiles, includeBandwidths=includeBandwidths,
+                           include_container=True),
             rating = float(starRating),
             title = xstr(title),
             year = xint(year),
@@ -1135,7 +1187,13 @@ def makeSafeFilename(inputFilename):
 ###################################################################################################
         
 def resourceExists(inputFilename):
-	return Core.storage.resource_exists(inputFilename)
+	return Core.storage.resource_exists(inputFilename)  
+
+def fileExists(inputFilepath):
+    return os.path.exists(inputFilepath)
+
+def dirExists(inputDir):
+    return Core.storage.dir_exists(inputDir)
 
 ###################################################################################################
 # python 'any' function
@@ -1421,5 +1479,6 @@ class Favorite:
                     self.channels.sort(key=float)
                 except Exception as inst:
                     logError('Favorite.channels.sort'+strError(inst))
+
 
 
