@@ -1,3 +1,7 @@
+##1.0.0 (2017-03-20)
+- Copy channel logo/icons feature
+- Code Tweak
+
 ##0.9.19 (2017-03-17)
 - VideoCodec Rule/Override
 - AudioCodec Rule/Override
