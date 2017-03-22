@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (1.0.0)'
+TITLE                = 'HDHR Viewer 2 (1.0.1)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '1.0.0'
+VERSION              = '1.0.1'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -140,7 +140,7 @@ def MainMenu():
     oc.add(PrefsObject(title='Settings', thumb=R(ICON_SETTINGS)))
 
     # Load Channel Icons
-    Resources_iconpath = Core.storage.join_path(Core.bundle_path,'Contents','Resources','Icons')
+    Resources_iconpath = Core.storage.join_path(Core.bundle_path,'Contents','Resources')
     Local_iconpath = Prefs[PREFS_ICONDIR]
     if dirExists(Local_iconpath):
         #Only Show Reload Icons if directory properly configured.
