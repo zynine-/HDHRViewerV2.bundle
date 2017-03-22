@@ -1,3 +1,6 @@
+##1.0.1 (2017-03-22)
+- Copy channel logo/icons path fix
+
 ##1.0.0 (2017-03-20)
 - Copy channel logo/icons feature
 - Code Tweak
