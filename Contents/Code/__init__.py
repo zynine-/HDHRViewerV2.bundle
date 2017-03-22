@@ -274,7 +274,7 @@ def LoadChannelIcons():
 
     try:
         logDebug('LoadChannelIcons')
-        Resources_iconpath = Core.storage.join_path(Core.bundle_path,'Contents','Resources','Icons')
+        Resources_iconpath = Core.storage.join_path(Core.bundle_path,'Contents','Resources')
         Local_iconpath = Prefs[PREFS_ICONDIR]
         #Core.storage.copy_tree(Local_iconpath,Resources_iconpath)
 
