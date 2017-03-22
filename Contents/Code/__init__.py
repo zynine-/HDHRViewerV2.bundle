@@ -8,9 +8,9 @@ import os
 from lxml import etree
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (1.0.1)'
+TITLE                = 'HDHR Viewer 2 (1.0.2)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '1.0.1'
+VERSION              = '1.0.2'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -144,9 +144,8 @@ def MainMenu():
     Local_iconpath = Prefs[PREFS_ICONDIR]
     if dirExists(Local_iconpath):
         #Only Show Reload Icons if directory properly configured.
-        oc.add(DirectoryObject(key=Callback(LoadChannelIcons), title='Reload Icons', art=R(ART), thumb=R(ICON_SETTINGS)))
-        if not dirExists(Resources_iconpath):
-            LoadChannelIcons()
+        oc.add(DirectoryObject(key=Callback(LoadChannelIcons,force=True), title='Reload Icons', art=R(ART), thumb=R(ICON_SETTINGS)))
+        LoadChannelIcons(force=False)
 
     # Dev/Debug purpose
     #oc.add(CreateVO(tuneridx=1, url="http://192.168.1.11/TestVideos/v5134.mpeg" ,title="TestTitle", year="2010", tagline="Tag", summary="summary", starRating=3.5, thumb=ICON_FAV_LIST, videoCodec=None, audioCodec=None,transcode="default"))
@@ -268,7 +267,7 @@ def SearchResultsChannelsMenu(query):
     return oc
 
 @route(PREFIX + '/load-channel-icons')
-def LoadChannelIcons():
+def LoadChannelIcons(force=False):
 
     oc = ObjectContainer(title1='Load Channel Icons',no_cache=True)
 
@@ -276,12 +275,11 @@ def LoadChannelIcons():
         logDebug('LoadChannelIcons')
         Resources_iconpath = Core.storage.join_path(Core.bundle_path,'Contents','Resources')
         Local_iconpath = Prefs[PREFS_ICONDIR]
-        #Core.storage.copy_tree(Local_iconpath,Resources_iconpath)
 
         for filename in Core.storage.list_dir(Local_iconpath):
             src = Core.storage.join_path(Local_iconpath,filename)
             dest = Core.storage.join_path(Resources_iconpath,filename)
-            if os.path.isfile(src):
+            if os.path.isfile(src) and (force or not os.path.isfile(dest)):
                 Core.storage.copy(src,dest)
 
         return AddErrorObjectContainer(oc,'Done!')
