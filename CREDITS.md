@@ -13,4 +13,4 @@ Credits
 - [SpacemanJT@plex](https://forums.plex.tv/profile/SpacemanJT)
   sample files and info for UK tuner support.
 - [daeks](https://github.com/daeks)
-  XMLTV-File Last Channel data missing; Audio codec feedbacks/fixes
+  XMLTV-File Last Channel data missing; Audio codec feedbacks/fixes; Copy channel logos feedback.
