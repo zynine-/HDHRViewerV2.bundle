@@ -98,7 +98,7 @@ Estimated CPU requirement for 1080i MPEGTS transcoding:
 - AMD Athlon Quad Core 3Ghz or faster.
 - AMD AthlonII/Phenom/A6/A8/A10 Quad Core 2.5Ghz or faster.
 
-CPU requirement may be much lower with PMS 1.4.0 Hardware Transcoding Preview with Intel CPU with Intel Quick Sync support.
+CPU requirement may be much lower with PMS Hardware Transcoding Previews.
 
 ## Client Compatibility
 
