@@ -31,11 +31,7 @@ For full automatic discover (requires internet connection). Set **HDHomeRun IP:*
 Example of manual discover + multiple tuner + automatic discovery. Set **HDHomeRun IP:**
 >192.168.1.111 192.168.1.112 192.168.1.113
 
-### Up to 0.8.x:
-Supports only 1 tuner, and tuner IP address have to be manually specified in settings. Set **HDHomeRun IP:**
-> 192.168.1.111
-
-## 3. Generate required codec (PMS 0.9.17.x to 1.3.x.)
+## 3. Generate required codec (PMS 0.9.17.x to 1.3.x, I think this was fixed with PMS 1.4.x)
 
 With Plex Media Server 0.9.17.x to 1.3.x, there was a change in the Plex transcoder which caused playback issue on most clients for first time users. To fix this problem, download a short clip from your HDHomeRun device, and add it to your PMS library, and play it. Now try using the **HDHR Viewer 2** again.
 
@@ -62,7 +58,7 @@ Go to **HDHR Viewer 2**, and try playing a video stream.
 
 ## Common Issues and Resolution
 
-### Android devices
+### Android devices (I think this was fixed with PMS 1.4.x)
 Certain android devices will have issue with playback. This is due to **Plex Media Server (PMS)** not transcoding the **ac3** audio stream to **aac** properly. You can try to change the audio codec listed **Android.xml** profile in PMS Resources folder from **aac** to **mp3**.
 
 ### For other issues
@@ -92,7 +88,7 @@ Please use [HDSurfer Plug-in for HDHomeRun](https://forums.plex.tv/discussion/83
 
 Standard Plex requirement for streaming to Plex Home Theater (PHT)
 
-High CPU requirement for transcoding to other clients (Web/Android/Roku/FireTV/etc…). Typical NAS devices may not have capable CPU for transcoding. Not compatible with Nvidia Shields (unless rooted, due to elevated privilages required for File-based XMLTV. I may spin-off another version just for Nvidia Shields if requested)
+High CPU requirement for transcoding to other clients (Web/Android/Roku/FireTV/etc…). Typical NAS devices may not have capable CPU for transcoding. Not compatible with Nvidia Shields (unless rooted, due to elevated privilages required for File-based functions (XMLTV, icons). I may spin-off another version just for Nvidia Shields, if enough users requeste it.)
 
 Estimated CPU requirement for 1080i MPEGTS transcoding:
 - Intel Core2 Quad 2.5Ghz or faster.
@@ -101,6 +97,8 @@ Estimated CPU requirement for 1080i MPEGTS transcoding:
 - Intel i3/i5/i7 Dual Core (Later Generation) Turbo Speed 2.5Ghz or faster.
 - AMD Athlon Quad Core 3Ghz or faster.
 - AMD AthlonII/Phenom/A6/A8/A10 Quad Core 2.5Ghz or faster.
+
+CPU requirement may be much lower with PMS 1.4.0 Hardware Transcoding Preview with Intel CPU with Intel Quick Sync support.
 
 ## Client Compatibility
 
