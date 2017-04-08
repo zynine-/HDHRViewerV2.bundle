@@ -1,3 +1,7 @@
+## 1.1.0 (2017-04-08)
+- DumbTools for Plex v1.1
+- Channel availibility check/warning.
+
 ## 1.0.2 (2017-03-22)
 - Copy channel logic fix.
 

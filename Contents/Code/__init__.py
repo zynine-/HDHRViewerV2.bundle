@@ -4,13 +4,17 @@ import time
 import string
 from datetime import datetime
 import urllib
+import urllib2
 import os
+import re
 from lxml import etree
 
+from DumbTools import DumbPrefs
+
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (1.0.2)'
+TITLE                = 'HDHR Viewer 2 (1.1.0)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '1.0.2'
+VERSION              = '1.1.0'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -49,6 +53,7 @@ URL_HDHR_DISCOVER         = 'http://{ip}/discover.json'
 URL_HDHR_DISCOVER_DEVICES = 'http://my.hdhomerun.com/discover'
 URL_HDHR_GUIDE            = 'http://my.hdhomerun.com/api/guide.php?DeviceAuth={deviceAuth}'
 URL_HDHR_LINEUP           = 'http://{ip}/lineup.json'
+URL_HDHR_TUNER_STATUS     = 'http://{ip}/tuners.html'
 #URL_HDHR_STREAM           = 'http://{ip}:5004/{tuner}/v{guideNumber}'
 CACHETIME_HDHR_GUIDE      = 3600 # (s) Default: 3600 = 1 hour
 
@@ -137,7 +142,12 @@ def MainMenu():
         oc.add(PopupDirectoryObject(key=Callback(errorMessage,message=errmsg), title=errmsg, art=R(ART), thumb=R(ICON_ERROR)))
 
     # Settings / Preference Menu
-    oc.add(PrefsObject(title='Settings', thumb=R(ICON_SETTINGS)))
+    #oc.add(PrefsObject(title='Settings', thumb=R(ICON_SETTINGS)))
+    
+    if Client.Product in DumbPrefs.clients:
+        DumbPrefs(PREFIX, oc,title = L('Settings'),thumb = R(ICON_SETTINGS))
+    else:
+        oc.add(PrefsObject(title = L('Settings'),thumb = R(ICON_SETTINGS)))
 
     # Load Channel Icons
     Resources_iconpath = Core.storage.join_path(Core.bundle_path,'Contents','Resources')
@@ -197,7 +207,6 @@ def FavoriteChannelsMenu(favidx):
     oc = ObjectContainer(title1=ocTitle)
 
     try:
-        
         # If tuner IP is defined in Fav list, and exist in Tuner list
         for tuneridx, tuner in enumerate(tuners):
             if tuner['LocalIP']==favorite.tuner:
@@ -808,8 +817,22 @@ def GetVcoIcon(channel,program):
         icon = R(icon_channelnumber)
     elif resourceExists('logo-'+icon_channelnumber):
         icon = R('logo-'+icon_channelnumber)
+
+    #logDebug(icon)
     
     return icon
+
+###################################################################################################
+# Check tuner availibility
+###################################################################################################	
+def CheckTunerAvail(ip):
+    try:
+        htmlData = urllib2.urlopen(URL_HDHR_TUNER_STATUS.format(ip=ip),timeout=TIMEOUT_LAN).read()
+        tuner_avail = re.findall('>none<',htmlData)
+        return len(tuner_avail)
+    except Exception as inst:
+        logError('CheckTunerAvail(ip):'+strError(inst))
+        return -1
 
     
 ###################################################################################################
@@ -902,6 +925,10 @@ def AddChannelObjectContainer(oc, tuneridx, title, channels, search=False):
     #localIP = tuner['LocalIP']
     localIP = tuner.get('LocalIP','')
     deviceID = jsonData.get('DeviceID','unknown')
+
+    if CheckTunerAvail(localIP)==0:
+        errmsg='Warning: Tuner not available!'
+        oc.add(PopupDirectoryObject(key=Callback(errorMessage,message=errmsg), title=errmsg, art=R(ART), thumb=R(ICON_ERROR)))
 
     #Debugging info
     logInfo('********************[Tuner]***********************')
@@ -1014,7 +1041,18 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=None
              #checkFiles=0, includeBandwidths=1,
              **kwargs):
 
+    tuneridx_int=int(tuneridx)
+    tuner = Dict['tuners'][tuneridx_int]
+    localIP = tuner.get('LocalIP','')
+
+    #If tuner is not available:
+    if CheckTunerAvail(localIP)==0 and include_container:
+        errmsg='Warning: Tuner not available!\n'
+        summary=errmsg + xstr(summary)
+    
     uniquekey = str(tuneridx)+url
+
+
 
     if transcode=='auto':
         #Auto Transcode for HDTC-2US
@@ -1233,6 +1271,7 @@ def iOSPlex44():
 ###################################################################################################   
 def errorMessage(message):
 	return ObjectContainer(header="Error", message=message)
+
 		
 ###################################################################################################
 # Client Information.
