@@ -8,10 +8,18 @@ This is the best method. **HDHR Viewer 2** can be updated easily through the **U
 **UAS V2** is available at <https://forums.plex.tv/discussion/202282/unsupported-appstore-v2-as-in-totally-unsupported/p1>
 
 ### Method 2 : Manual Installation
-	a. git clone the the github **HDHRViewerV2.bundle** package to your local system
-	b. Copy the **HDHRViewerV2.bundle** files to Plex Plug-in Directory. 
-	[How do I find the Plug-Ins folder?](https://support.plex.tv/hc/en-us/articles/201106098-How-do-I-find-the-Plug-Ins-folder-)
-  		note that this info is not 100% foolproof
+Copy **HDHRViewerV2.bundle** to Plex Plug-in Directory.
+
+1. Git clone or download the [latest github copy](https://github.com/zynine-/HDHRViewerV2.bundle/archive/master.zip).
+2. Unzip and rename the folder to **HDHRViewerV2.bundle**
+3. Copy the folder to Plex Media Server plug-in folder. [Read more: How do I find the Plug-Ins folder?](https://support.plex.tv/hc/en-us/articles/201106098-How-do-I-find-the-Plug-Ins-folder-)
+
+4. Make sure the directory structure looks like:
+```
+Plug-ins
+  |_ HDHRViewerV2.bundle
+    |_ Contents
+```
 
 ### Method 3 : Scripts
 Run install scripts included. (Limited OS)
