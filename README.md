@@ -1,7 +1,7 @@
 # HDHRViewerV2.bundle
 Watch Live TV on Plex using HDHomeRun, at home or remotely. Compatibility may vary by Plex Media Server (PMS) version, Plex client version, etc... 
 
-#Getting Started
+# Getting Started
 ## 1. Installation
 ### Method 1 : Unsupported AppStore V2 (UAS V2)
 This is the best method. **HDHR Viewer 2** can be updated easily through the **UAS V2** interface.
