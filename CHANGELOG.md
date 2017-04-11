@@ -1,3 +1,6 @@
+## 1.1.1 (2017-04-11)
+- Fix for OpenPHT (channels selection issue)
+
 ## 1.1.0 (2017-04-08)
 - DumbTools for Plex v1.1
 - Channel availibility check/warning.
