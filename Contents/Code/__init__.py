@@ -12,9 +12,9 @@ from lxml import etree
 from DumbTools import DumbPrefs
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (1.1.0)'
+TITLE                = 'HDHR Viewer 2 (1.1.1)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '1.1.0'
+VERSION              = '1.1.1'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -747,7 +747,7 @@ def GetVcoTitle(channel):
 # This function returns the tagline to be used with the VideoClipObject
 ###################################################################################################
 def GetVcoTagline(program):
-    tagline = ""
+    tagline = " "
     if (program is not None):
         startTimeDisplay = GetTimeDisplay(program.startTime)
         stopTimeDisplay = GetTimeDisplay(program.stopTime)
@@ -760,7 +760,7 @@ def GetVcoTagline(program):
 # This function returns the summary to be used with the VideoClipObject
 ###################################################################################################
 def GetVcoSummary(program):
-    summary = ""
+    summary = " "
     if (program is not None):
         if (program.desc is not None):
             summary += program.desc
@@ -790,7 +790,7 @@ def GetVcoStarRating(program):
 # This function returns the star rating (float value) for the given progam
 ###################################################################################################
 def GetVcoYear(program):
-    year = None
+    year = " "
     if (program is not None and program.date is not None):
         year = program.date
     return year
