@@ -12,9 +12,9 @@ from lxml import etree
 from DumbTools import DumbPrefs
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (1.1.1)'
+TITLE                = 'HDHR Viewer 2 (1.1.2)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '1.1.1'
+VERSION              = '1.1.2'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
