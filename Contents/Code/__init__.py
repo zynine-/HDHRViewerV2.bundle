@@ -1046,7 +1046,7 @@ def CreateVO(tuneridx, url, title, year=None, tagline='', summary='', thumb=None
     localIP = tuner.get('LocalIP','')
 
     #If tuner is not available:
-    if CheckTunerAvail(localIP)==0 and include_container:
+    if include_container  and CheckTunerAvail(localIP)==0:
         errmsg='Warning: Tuner not available!\n'
         summary=errmsg + xstr(summary)
     
