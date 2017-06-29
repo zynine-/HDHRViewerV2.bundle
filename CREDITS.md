@@ -14,3 +14,5 @@ Credits
   sample files and info for UK tuner support.
 - [daeks](https://github.com/daeks)
   XMLTV-File Last Channel data missing; Audio codec feedbacks/fixes; Copy channel logos feedback.
+- [psaab](https://github.com/psaab)
+  Code improvement
