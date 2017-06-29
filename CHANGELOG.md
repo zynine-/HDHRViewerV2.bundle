@@ -1,3 +1,6 @@
+## 1.1.2 (2017-06-28)
+- Code improvement by psaab: Don't check the tuner on every CreateVO
+
 ## 1.1.1 (2017-04-11)
 - Fix for OpenPHT (channels selection issue)
 
