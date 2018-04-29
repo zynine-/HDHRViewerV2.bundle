@@ -12,9 +12,9 @@ from lxml import etree
 from DumbTools import DumbPrefs
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (1.1.2)'
+TITLE                = 'HDHR Viewer 2 (1.1.3)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '1.1.2'
+VERSION              = '1.1.3'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -38,6 +38,7 @@ PREFS_XMLTV_APIURL   = 'xmltv_api_url'
 PREFS_VCODEC         = 'videocodec'
 PREFS_ACODEC         = 'audiocodec'
 PREFS_ICONDIR        = 'icon_directory'
+PREFS_AUTODISCOVER   = 'autodiscover'
 
 #XMLTV Modes
 XMLTV_MODE_RESTAPI   = 'restapi'
@@ -1387,28 +1388,29 @@ class Devices:
     # Auto Discover devices
     def autoDiscover(self):
         cacheTime=None
-        try:
-            response = xstr(HTTP.Request(URL_HDHR_DISCOVER_DEVICES,timeout=TIMEOUT,cacheTime=cacheTime))
-            JSONdevices = JSON.ObjectFromString(''.join(response.splitlines()))
+        if Prefs[PREFS_AUTODISCOVER]:
+            try:
+                response = xstr(HTTP.Request(URL_HDHR_DISCOVER_DEVICES,timeout=TIMEOUT,cacheTime=cacheTime))
+                JSONdevices = JSON.ObjectFromString(''.join(response.splitlines()))
 
-            for device in JSONdevices:
-                StorageURL = device.get('StorageURL')
-                LineupURL = device.get('LineupURL')
-                
-                if LineupURL is not None:
-                    if not xany(d['LocalIP']==device['LocalIP'] for d in self.tunerDevices):
-                        device['autoDiscover'] = True
-                        logInfo('Adding auto discovered tuner: '+device['LocalIP'])
-                        self.tunerDevices.append(device)
-                    else:
-                        logInfo('Auto discovered tuner skipped (duplicate): '+device['LocalIP'])
+                for device in JSONdevices:
+                    StorageURL = device.get('StorageURL')
+                    LineupURL = device.get('LineupURL')
+                    
+                    if LineupURL is not None:
+                        if not xany(d['LocalIP']==device['LocalIP'] for d in self.tunerDevices):
+                            device['autoDiscover'] = True
+                            logInfo('Adding auto discovered tuner: '+device['LocalIP'])
+                            self.tunerDevices.append(device)
+                        else:
+                            logInfo('Auto discovered tuner skipped (duplicate): '+device['LocalIP'])
 
-                #future
-                if StorageURL is not None:
-                    self.storageServers.append(device)
-
-        except Exception as inst:
-            logError('Devices.autoDiscover(): '+strError(inst))
+                    #future
+                    if StorageURL is not None:
+                        self.storageServers.append(device)
+            except Exception as inst:
+                logError('Devices.autoDiscover(): '+strError(inst))
+        
 
     # Get manual tuners listed in Settings
     def manualTuner(self):
