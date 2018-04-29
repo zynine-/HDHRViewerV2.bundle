@@ -6,6 +6,12 @@
 		"default": "auto"
 	},
 	{
+		"id": "autodiscover",
+		"type": "bool",
+		"label": "Enable Auto Discover",
+		"default": "true"
+	},
+	{
 		"id": "xmltv_mode",
 		"type": "enum",
 		"label": "XMLTV Mode (Manual Tuner only)",
