@@ -1,3 +1,6 @@
+## 1.1.3 (2018-04-29)
+- Ability to disable tuner auto discover via options.
+
 ## 1.1.2 (2017-06-28)
 - Code improvement by psaab: Don't check the tuner on every CreateVO
 
