@@ -1,3 +1,5 @@
+![GitHub release](https://img.shields.io/github/release/zynine-/HDHRViewerV2.bundle.svg?style=for-the-badge)
+
 # HDHRViewerV2.bundle
 Watch Live TV on Plex using HDHomeRun, at home or remotely. Compatibility may vary by Plex Media Server (PMS) version, Plex client version, etc... 
 
