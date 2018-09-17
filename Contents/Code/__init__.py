@@ -12,9 +12,9 @@ from lxml import etree
 from DumbTools import DumbPrefs
 
 DEBUGMODE            = True
-TITLE                = 'HDHR Viewer 2 (1.1.3)'
+TITLE                = 'HDHR Viewer 2 (1.1.4)'
 PREFIX               = '/video/hdhrv2'
-VERSION              = '1.1.3'
+VERSION              = '1.1.4'
 
 #GRAPHICS
 ART                  = 'art-default.jpg'
@@ -829,7 +829,7 @@ def GetVcoIcon(channel,program):
 def CheckTunerAvail(ip):
     try:
         htmlData = urllib2.urlopen(URL_HDHR_TUNER_STATUS.format(ip=ip),timeout=TIMEOUT_LAN).read()
-        tuner_avail = re.findall('>none<',htmlData)
+        tuner_avail = re.findall('>not in use<',htmlData)
         return len(tuner_avail)
     except Exception as inst:
         logError('CheckTunerAvail(ip):'+strError(inst))
